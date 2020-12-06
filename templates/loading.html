@@ -1,13 +1,41 @@
 <!doctype html>
 <html>
     <head>
-        <title>Analyzing...</title>
+        <title>muse | analyzing...</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/standard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
+
+        <div class="topnav" id="menu" style="height:60px">
+            <div id="muse">
+                muse
+            </div>
+            <div id="name">
+                by AMANI RUNE MAINA-KILAAS
+            </div>
+        </div>
     </head>
 
     <body onload="document.forms['loading'].submit()">
-        <form action="/loading" name="loading">
-            We are getting your data ready
-        </form>
+
+        <div class="center">
+            <img src="{{ url_for('static', filename='loading.gif') }}">
+            <form action="/loading" name="loading" id="loading-text" class="text" style="font-size: 40px; color: #8D7EF2; transition: color 0.5s;">
+                Analyzing your music...
+            </form>
+        </div>
+
+        <script>
+            var loading_text = document.getElementById("loading-text");
+            const colors = ["#8D7EF2", "#6DBFF2", "#99E2F2", "#E9A7F2", "#D288F2"];
+            var i = 1 //already set to first color
+            function updateColor() {
+                loading_text.style.color = colors[i];
+                ++i;
+                i = i % 5;
+            }
+            window.setInterval(updateColor, 1000);
+        </script>
+
     </body>
 
 </html>

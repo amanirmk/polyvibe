@@ -1,13 +1,42 @@
 <!doctype html>
 <html>
     <head>
-        <title>Muse</title>
+        <title>muse | home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/standard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
+
+        <div class="topnav" id="menu" style="height:60px">
+            <div id="muse">
+                muse
+            </div>
+            <div id="name">
+                by AMANI RUNE MAINA-KILAAS
+            </div>
+        </div>
+
     </head>
 
     <body>
-        <form action="/authorization">
-            <p><input type="submit" value= "Log In With Spotify"></p>
-        </form>
+        <div class="center">
+            <div id="welcome" class="text">
+                Welcome!
+            </div>
+            <div id="description" class="text">
+                analyze your listening history with muse
+            </div>
+            <br><br><br>
+            <div id="prompt" class="text">
+                Please select your platform
+            </div>
+            <form action="/authorization">
+                <input id="spotify" class="text" type="submit" value="LOG IN WITH SPOTIFY">
+            </form>
+            <form action="/authorization">
+                <input id="apple" class="text" type="submit" value="LOG IN WITH APPLE MUSIC">
+            </form>
+        </div>
+
     </body>
 
 </html>

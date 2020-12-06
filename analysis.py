@@ -1,7 +1,6 @@
 import json
 import requests
 import matplotlib.pyplot as plt
-from urllib.parse import quote, urlencode
 from collections import Counter
 
 base = "https://api.spotify.com/v1"

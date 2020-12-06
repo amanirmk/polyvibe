@@ -1,0 +1,39 @@
+
+#welcome {
+    font-size: 100px;
+}
+
+#description {
+    font-size: 30px;
+    background: -webkit-linear-gradient(left, #8D7EF2, #6DBFF2, #99E2F2, #E9A7F2, #D288F2);
+    background-clip: text;
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#prompt {
+    font-size: 24px;
+    margin: 10px;
+}
+
+#spotify {
+    background: -webkit-linear-gradient(left, rgb(32,175,67), rgb(32,175,67), rgb(36,212,78), rgb(36,212,78));
+    background-clip: text;
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-image: -webkit-linear-gradient(left, rgb(32,175,67), rgb(32,175,67), rgb(36,212,78), rgb(36,212,78)) 1;
+}
+
+#apple {
+    background: -webkit-linear-gradient(left, rgb(114,70,254), rgb(114,70,254), rgb(246,67,96),  rgb(246,67,96), rgb(54,149,249), rgb(54,149,249));
+    background-clip: text;
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-image: -webkit-linear-gradient(left, rgb(114,70,254), rgb(114,70,254), rgb(246,67,96),  rgb(246,67,96), rgb(54,149,249), rgb(54,149,249)) 1;
+}

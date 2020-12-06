@@ -22,7 +22,7 @@ def authorize():
         "response_type": "code",
         "redirect_uri": redirect_uri,
         "scope": scope,
-        "show_dialog": "false",
+        "show_dialog": "true",
         "client_id": client_id
     }
     url_args = "&".join(["{}={}".format(key, quote(val)) for key, val in auth_params.items()])

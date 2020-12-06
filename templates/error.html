@@ -1,11 +1,48 @@
 <!doctype html>
 <html>
     <head>
-        <title>Retry</title>
+        <title>muse | error </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/standard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
+
+        <style>
+            #retry {
+                background: -webkit-linear-gradient(left, #8D7EF2, #6DBFF2, #99E2F2, #E9A7F2, #D288F2);
+                background-clip: text;
+                -moz-background-clip: text;
+                -moz-text-fill-color: transparent;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                border-image: -webkit-linear-gradient(left, #8D7EF2, #6DBFF2, #99E2F2, #E9A7F2, #D288F2) 1;
+            }
+        </style>
+
+        <div class="topnav" id="menu" style="height:60px">
+            <div id="muse">
+                muse
+            </div>
+            <div id="name">
+                by AMANI RUNE MAINA-KILAAS
+            </div>
+        </div>
     </head>
 
     <body>
-        u stupid af bro wtf
+        <div class="center">
+            <div class="text" style="font-size: 100px">
+                Whoops!
+            </div>
+            <div class="text" style="font-size: 30px">
+                we encountered an issue when retrieving your data
+            </div>
+            <br><br><br>
+            <div class="text" style="font-size: 20px; margin: 10px;">
+                Sorry about that, please try again
+            </div>
+            <form action="/">
+                <input id="retry" class="text" type="submit" value="RETURN TO HOME">
+            </form>
+        </div>
     </body>
 
 </html>
