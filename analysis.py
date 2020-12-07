@@ -43,7 +43,7 @@ def analyze_spotify(access_token):
     
     #get top artists
     for i,term in enumerate(["long_term", "medium_term", "short_term"]):
-        response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":25}, headers=auth_header)
+        response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":10}, headers=auth_header)
         if response.status_code == requests.codes.ok:
             artist_data = json.loads(response.text)["items"]
             artists[i].extend([{artist["name"]:artist} for artist in artist_data])
@@ -146,12 +146,14 @@ def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
     return success
 
 def top_artists(l_a_names, m_a_names, s_a_names):
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
     artist_set = set()
     artist_set.update(l_a_names)
     artist_set.update(m_a_names)
     artist_set.update(s_a_names)
     places_dict = {}
-    count = len(artist_set)
+    count = max(len(l_a_names), len(m_a_names), len(s_a_names))
     for artist in artist_set:
         places = []
         for l in [l_a_names, m_a_names, s_a_names]:
@@ -160,9 +162,29 @@ def top_artists(l_a_names, m_a_names, s_a_names):
             except:
                 places.append(count+1)
         places_dict[artist] = places
+    ha = {
+        0:"left",
+        1:"center",
+        2:"right"
+    }
     img = io.BytesIO()
+    plt.figure(figsize=(10, 6))
+    colors = ['#8D7EF2', '#6DBFF2', '#E9A7F2', '#f64360', '#3f2ff5', '#fa05f2', '#10d0de']
+    while len(colors) < len(artist_set):
+        colors += colors
+    colorIter = iter(colors)
     for artist in artist_set:
-        plt.plot(places_dict[artist], label=artist)
+        plt.plot(places_dict[artist], color=next(colorIter))
+        for i,place in enumerate(places_dict[artist][::-1]):
+            if place <= count:
+                plt.annotate(artist, (2-i,place), ha=ha[2-i])
+                break
+    # plt.legend()
+    plt.yticks(list(range(1,count+1)))
+    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
+    plt.gca().yaxis.tick_right()
+    plt.gca().set_ylim([0.5,count+0.5])
+    plt.gca().invert_yaxis()
     plt.savefig(img, format='png')
     plt.close()
     img.seek(0)
@@ -184,7 +206,7 @@ def features(tracks_dict):
 
 
 
-    #note that lengths may not be 25
+    #note that lengths may be less than limit
 
     #artists over various terms
     #can get genres associated with artists
