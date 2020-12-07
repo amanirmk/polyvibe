@@ -1,39 +1,42 @@
 
 #welcome {
-    font-size: 100px;
+    font-size: min(20vw, 100px);
 }
 
 #description {
-    font-size: 30px;
+    font-size: min(5vw, 30px);
     background: -webkit-linear-gradient(left, #8D7EF2, #6DBFF2, #99E2F2, #E9A7F2, #D288F2);
     background-clip: text;
+    background-color: black;
     -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
+    -moz-text-fill-color: rgb(0,0,0,0);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: rgb(0,0,0,0);
 }
 
 #prompt {
-    font-size: 24px;
+    font-size: min(5vw, 24px);
     margin: 10px;
 }
 
 #spotify {
+    background-color: black;
     background: -webkit-linear-gradient(left, rgb(32,175,67), rgb(32,175,67), rgb(36,212,78), rgb(36,212,78));
     background-clip: text;
     -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
+    -moz-text-fill-color: rgb(0,0,0,0);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: rgb(0,0,0,0);
     border-image: -webkit-linear-gradient(left, rgb(32,175,67), rgb(32,175,67), rgb(36,212,78), rgb(36,212,78)) 1;
 }
 
 #apple {
+    background-color: black;
     background: -webkit-linear-gradient(left, rgb(114,70,254), rgb(114,70,254), rgb(246,67,96),  rgb(246,67,96), rgb(54,149,249), rgb(54,149,249));
     background-clip: text;
     -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
+    -moz-text-fill-color: rgb(0,0,0,0);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: rgb(0,0,0,0);
     border-image: -webkit-linear-gradient(left, rgb(114,70,254), rgb(114,70,254), rgb(246,67,96),  rgb(246,67,96), rgb(54,149,249), rgb(54,149,249)) 1;
 }

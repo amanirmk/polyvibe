@@ -4,8 +4,9 @@
         <title>muse | analyzing...</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/standard.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <div class="topnav" id="menu" style="height:60px">
+        <div class="topnav" id="menu">
             <div id="muse">
                 muse
             </div>
@@ -15,27 +16,34 @@
         </div>
     </head>
 
-    <body onload="document.forms['loading'].submit()">
-
+    <body>
         <div class="center">
-            <img src="{{ url_for('static', filename='loading.gif') }}">
-            <form action="/loading" name="loading" id="loading-text" class="text" style="font-size: 40px; color: #8D7EF2; transition: color 0.5s;">
+            <img id="loading-icon" src="{{ url_for('static', filename='media/loading.gif') }}">
+            <form action="/loading" name="loading" id="loading-text" class="text" style="font-size: min(7vw, 40px); color: #8D7EF2; transition: color 0.5s;">
                 Analyzing your music...
             </form>
         </div>
 
         <script>
-            var loading_text = document.getElementById("loading-text");
-            const colors = ["#8D7EF2", "#6DBFF2", "#99E2F2", "#E9A7F2", "#D288F2"];
-            var i = 1 //already set to first color
-            function updateColor() {
-                loading_text.style.color = colors[i];
-                ++i;
-                i = i % 5;
+            if (window.safari !== undefined) {
+                // safari stops animations/js on current page on redirect,
+                // so don't bother and just remove loading icon so it 
+                // doesn't seem like page froze
+                var icon = document.getElementById("loading-icon");
+                icon.style.display = "none";
+            } else {
+                var loading_text = document.getElementById("loading-text");
+                const colors = ["#8D7EF2", "#6DBFF2", "#99E2F2", "#E9A7F2", "#D288F2"];
+                var i = 1 //already set to first color
+                function updateColor() {
+                    loading_text.style.color = colors[i];
+                    ++i;
+                    i = i % 5;
+                }
+                window.setInterval(updateColor, 1000);
             }
-            window.setInterval(updateColor, 1000);
+            document.forms['loading'].submit();
         </script>
-
     </body>
 
 </html>

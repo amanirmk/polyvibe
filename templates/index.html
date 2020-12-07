@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
 
-        <div class="topnav" id="menu" style="height:60px">
+        <div class="topnav" id="menu">
             <div id="muse">
                 muse
             </div>
@@ -14,7 +14,6 @@
                 by AMANI RUNE MAINA-KILAAS
             </div>
         </div>
-
     </head>
 
     <body>
@@ -29,14 +28,9 @@
             <div id="prompt" class="text">
                 Please select your platform
             </div>
-            <form action="/authorization">
-                <input id="spotify" class="text" type="submit" value="LOG IN WITH SPOTIFY">
-            </form>
-            <form action="/authorization">
-                <input id="apple" class="text" type="submit" value="LOG IN WITH APPLE MUSIC">
-            </form>
+            <a id="spotify" class="grad-button text" href="/authorization">LOG IN WITH SPOTIFY</a>
+            <a id="apple" class="grad-button text" href="/authorization">LOG IN WITH APPLE MUSIC</a>
         </div>
-
     </body>
 
 </html>

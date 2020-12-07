@@ -6,6 +6,16 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
 
         <style>
+            #whoops {
+                font-size: min(20vw, 100px)
+            }
+            #issue {
+                font-size: min(4vw, 30px);
+            }
+            #sorry {
+                font-size: min(5vw, 20px);
+                margin: 10px;
+            }
             #retry {
                 background: -webkit-linear-gradient(left, #8D7EF2, #6DBFF2, #99E2F2, #E9A7F2, #D288F2);
                 background-clip: text;
@@ -17,7 +27,7 @@
             }
         </style>
 
-        <div class="topnav" id="menu" style="height:60px">
+        <div class="topnav" id="menu">
             <div id="muse">
                 muse
             </div>
@@ -29,20 +39,17 @@
 
     <body>
         <div class="center">
-            <div class="text" style="font-size: 100px">
+            <div id="whoops" class="text">
                 Whoops!
             </div>
-            <div class="text" style="font-size: 30px">
+            <div id="issue" class="text">
                 we encountered an issue when retrieving your data
             </div>
             <br><br><br>
-            <div class="text" style="font-size: 20px; margin: 10px;">
+            <div id="sorry" class="text">
                 Sorry about that, please try again
             </div>
-            <form action="/">
-                <input id="retry" class="text" type="submit" value="RETURN TO HOME">
-            </form>
+            <a id="retry" class="grad-button text" href="/">RETURN TO HOME</a>
         </div>
     </body>
-
 </html>
