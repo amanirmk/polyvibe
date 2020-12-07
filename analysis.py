@@ -1,5 +1,8 @@
 import json
 import requests
+import io
+import base64
+from urllib.parse import quote
 import matplotlib.pyplot as plt
 from collections import Counter
 
@@ -108,12 +111,12 @@ def analyze_spotify(access_token):
             incompleteData = True
             collectedPlaylists = True #don't want to get stuck
 
-    top_artists_img = top_artists(artists)
+    top_artists_img = top_artists(l_a_names, m_a_names, s_a_names)
     top_genres_img = top_genres(artists)
     all_genres = genres(all_artists)
     features_imgs = features(all_tracks)
     
-    return 0
+    return top_artists_img
 
 def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
     #if not tracks, do nothing
@@ -142,8 +145,30 @@ def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
             success = False
     return success
 
-def top_artists(artists_list):
-    ...
+def top_artists(l_a_names, m_a_names, s_a_names):
+    artist_set = set()
+    artist_set.update(l_a_names)
+    artist_set.update(m_a_names)
+    artist_set.update(s_a_names)
+    places_dict = {}
+    count = len(artist_set)
+    for artist in artist_set:
+        places = []
+        for l in [l_a_names, m_a_names, s_a_names]:
+            try:
+                places.append(l.index(artist)+1)
+            except:
+                places.append(count+1)
+        places_dict[artist] = places
+    img = io.BytesIO()
+    for artist in artist_set:
+        plt.plot(places_dict[artist], label=artist)
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    artists_pic = quote(base64.b64encode(img.read()).decode())
+    return artists_pic
+
 
 def top_genres(artists_list):
     ...

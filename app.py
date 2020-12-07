@@ -5,7 +5,7 @@ from urllib.parse import quote
 from flask import Flask, request, redirect, render_template, url_for, session
 
 app = Flask(__name__)
-app.secret_key = "doesn't really matter"
+app.secret_key = "this is going on github anyways"
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
@@ -22,7 +22,7 @@ def authorize():
         "response_type": "code",
         "redirect_uri": redirect_uri,
         "scope": scope,
-        "show_dialog": "true",
+        "show_dialog": "false",
         "client_id": client_id
     }
     url_args = "&".join(["{}={}".format(key, quote(val)) for key, val in auth_params.items()])
@@ -49,12 +49,12 @@ def getInfo():
 
 @app.route("/loading")
 def loading():
-    session["data"] = analyze_spotify(session["access_token"])
-    return redirect(url_for("display"))
+    data = analyze_spotify(session["access_token"])
+    return redirect(url_for("display", top_artists_img=data))
 
 @app.route("/display")
 def display():
-    return render_template("analysis.html")
+    return render_template("analysis.html", top_artists_img=request.args.get("top_artists_img"))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8888, debug=True)
