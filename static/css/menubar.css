@@ -63,6 +63,17 @@
     height: 60px;
 }
 
+#name a {
+    text-decoration:  none;
+    color: black;
+    transition: color 0.2s;
+}
+
+#name a:hover {
+    text-decoration:  none;
+    color: #8D7EF2;
+}
+
 @media only screen and (max-width: 570px) {
     #name {
         display: none;

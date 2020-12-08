@@ -2,15 +2,16 @@ import json
 import requests
 from analysis import analyze_spotify
 from urllib.parse import quote
-from flask import Flask, request, redirect, render_template, url_for, session
+from flask import Flask, request, redirect, render_template, url_for
 
 app = Flask(__name__)
-app.secret_key = "this is going on github anyways"
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
 redirect_uri = "http://localhost:8888/callback" #change later
 scope = "user-top-read playlist-read-private playlist-read-collaborative user-library-read"
+
+data = {}
 
 @app.route("/")
 def index():
@@ -22,7 +23,7 @@ def authorize():
         "response_type": "code",
         "redirect_uri": redirect_uri,
         "scope": scope,
-        "show_dialog": "false",
+        "show_dialog": "true",
         "client_id": client_id
     }
     url_args = "&".join(["{}={}".format(key, quote(val)) for key, val in auth_params.items()])
@@ -32,6 +33,7 @@ def authorize():
 @app.route("/callback")
 def getInfo():
     try:
+        global data
         code = request.args['code']
         post_data = {
             "grant_type": "authorization_code",
@@ -41,20 +43,20 @@ def getInfo():
             'client_secret': secret_id,
         }
         response = requests.post("https://accounts.spotify.com/api/token", data=post_data)
-        response_data = json.loads(response.text)
-        session["access_token"] = response_data["access_token"]
+        data["access_token"] = json.loads(response.text)["access_token"]
         return render_template("loading.html")
     except:
         return render_template("error.html")
 
 @app.route("/loading")
 def loading():
-    data = analyze_spotify(session["access_token"])
-    return redirect(url_for("display", top_artists_img=data))
+    global data
+    data["plots"] = analyze_spotify(data["access_token"])
+    return redirect(url_for("display"))
 
 @app.route("/display")
 def display():
-    return render_template("analysis.html", top_artists_img=request.args.get("top_artists_img"))
+    return render_template("analysis.html", top_artists_img=data["plots"]["top_artists_img"], top_genres_img=data["plots"]["top_genres_img"])
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8888, debug=True)

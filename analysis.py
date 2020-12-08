@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 base = "https://api.spotify.com/v1"
+colors = ['#8D7EF2', '#6DBFF2', '#E9A7F2', '#f64360', '#3f2ff5', '#fa05f2', '#10d0de']
 
 def analyze_spotify(access_token):
     auth_header = {"Authorization": "Bearer " + access_token}
@@ -111,12 +112,14 @@ def analyze_spotify(access_token):
             incompleteData = True
             collectedPlaylists = True #don't want to get stuck
 
-    top_artists_img = top_artists(l_a_names, m_a_names, s_a_names)
-    top_genres_img = top_genres(artists)
-    all_genres = genres(all_artists)
-    features_imgs = features(all_tracks)
-    
-    return top_artists_img
+    plot_data = {
+        "incomplete_data":incompleteData,
+        "top_artists_img":top_artists(l_a_names, m_a_names, s_a_names),
+        "top_genres_img": top_genres(artists),
+        "all_genres": genres(all_artists),
+        "features_imgs":features(all_tracks)
+    }
+    return plot_data 
 
 def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
     #if not tracks, do nothing
@@ -167,24 +170,24 @@ def top_artists(l_a_names, m_a_names, s_a_names):
         1:"center",
         2:"right"
     }
-    img = io.BytesIO()
     plt.figure(figsize=(10, 6))
-    colors = ['#8D7EF2', '#6DBFF2', '#E9A7F2', '#f64360', '#3f2ff5', '#fa05f2', '#10d0de']
+    global colors
+    plot_colors = colors
     while len(colors) < len(artist_set):
-        colors += colors
-    colorIter = iter(colors)
+        plot_colors += colors
+    colorIter = iter(plot_colors)
     for artist in artist_set:
         plt.plot(places_dict[artist], color=next(colorIter))
         for i,place in enumerate(places_dict[artist][::-1]):
             if place <= count:
                 plt.annotate(artist, (2-i,place), ha=ha[2-i])
                 break
-    # plt.legend()
     plt.yticks(list(range(1,count+1)))
-    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
     plt.gca().yaxis.tick_right()
+    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
     plt.gca().set_ylim([0.5,count+0.5])
     plt.gca().invert_yaxis()
+    img = io.BytesIO()
     plt.savefig(img, format='png')
     plt.close()
     img.seek(0)
@@ -192,8 +195,41 @@ def top_artists(l_a_names, m_a_names, s_a_names):
     return artists_pic
 
 
-def top_genres(artists_list):
-    ...
+def top_genres(artists_terms_list):
+    term_genres = [Counter(), Counter(), Counter()] #long, med, short
+    for i,term in enumerate(artists_terms_list):
+        for artist in term:
+            term_genres[i].update(artist[list(artist.keys())[0]]["genres"])
+    total_counts = [0,0,0]
+    all_genres = set()
+    for i,genre_counter in enumerate(term_genres):
+        for genre in genre_counter:
+            total_counts[i] += genre_counter[genre]
+            all_genres.add(genre)
+    all_genres_list = list(all_genres)
+    genre_props = []
+    for genre in all_genres_list:
+        props = []
+        for i in range(3):
+            props.append(term_genres[i][genre]/total_counts[i])
+        genre_props.append(props)
+    plt.figure(figsize=(10, 6))
+    global colors
+    plt.stackplot([0,1,2], *genre_props, labels=all_genres_list, colors=colors)
+    plt.yticks(list(range(0,100+1, 10)), [str(num)+"%" for num in range(0,100+1,10)])
+    plt.gca().yaxis.tick_right()
+    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
+    plt.gca().set_ylim([0,1])
+    plt.legend()
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    genres_stack_plot = quote(base64.b64encode(img.read()).decode())
+    return genres_stack_plot
+
+
+    
 
 def genres(artists_dict):
     ...
