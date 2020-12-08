@@ -4,21 +4,27 @@
         <title>muse | results</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/standard.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/menubar.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
 
         <div class="topnav" id="menu">
             <div id="muse">
                 muse
             </div>
             <div id="name">
-                by AMANI RUNE MAINA-KILAAS
+                <a href="https:/amanirmk.github.io" target="_blank">by AMANI RUNE MAINA-KILAAS</a>
             </div>
         </div>
     </head>
 
     <body>
-        <div class="center">
-            <img src="data:image/png;base64, {{ top_artists_img }}" width=600px>
-            <img src="data:image/png;base64, {{ top_genres_img }}" width=600px>
+        <div style="height: 60px"></div>
+        <div class="row">
+            <div class="content">
+                <img src="data:image/png;base64, {{ top_artists_img }}">
+            </div>
+            <div class="content">
+                <img src="data:image/png;base64, {{ top_genres_img }}">
+            </div>
         </div>
     </body>
 

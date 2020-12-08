@@ -1,0 +1,25 @@
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.row .content {
+    width: 50vw;
+}
+
+img {
+    width: inherit;
+    height: auto;
+}
+
+@media only screen and (max-width: 920px) {
+    .row {
+        flex-direction: column;
+    }
+    .row .content {
+        width: 100vw;
+    }
+}

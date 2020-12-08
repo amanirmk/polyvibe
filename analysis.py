@@ -2,6 +2,7 @@ import json
 import requests
 import io
 import base64
+import numpy as np
 from urllib.parse import quote
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -213,14 +214,17 @@ def top_genres(artists_terms_list):
         for i in range(3):
             props.append(term_genres[i][genre]/total_counts[i])
         genre_props.append(props)
+    all_genres_list.reverse()
     plt.figure(figsize=(10, 6))
-    global colors
-    plt.stackplot([0,1,2], *genre_props, labels=all_genres_list, colors=colors)
+    plt.set_cmap(plt.cm.tab20)
+    # plt.gca().set_prop_cycle('color', [colormap(i) for i in np.linspace(0, 1, len(all_genres_list))])
+    plt.stackplot([0,1,2], *genre_props, labels=all_genres_list)
     plt.yticks(list(range(0,100+1, 10)), [str(num)+"%" for num in range(0,100+1,10)])
     plt.gca().yaxis.tick_right()
-    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
+    plt.xticks([-0.75, 0,1,2],["", "Long Term", "Medium Term", "Short Term"])
     plt.gca().set_ylim([0,1])
-    plt.legend()
+    handles, labels = plt.gca().get_legend_handles_labels()
+    plt.gca().legend(handles[::-1], labels[::-1], loc='center left', fontsize=8)
     img = io.BytesIO()
     plt.savefig(img, format='png')
     plt.close()
