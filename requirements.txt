@@ -2,8 +2,4 @@ Flask
 matplotlib
 requests
 numpy
-json
-urllib
-io
-base64
 gunicorn
