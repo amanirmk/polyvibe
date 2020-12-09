@@ -43,8 +43,6 @@ def getInfo():
             'client_secret': secret_id,
         }
         response = requests.post("https://accounts.spotify.com/api/token", data=post_data)
-        print(json.loads(response.text))
-        print(json.loads(response.text).keys())
         data["access_token"] = json.loads(response.text)["access_token"]
         return render_template("loading.html")
     except:
@@ -54,6 +52,8 @@ def getInfo():
 def loading():
     try:
         global data
+        print(data)
+        print(data.keys())
         data["plots"] = analyze_spotify(data["access_token"])
     except Exception as error:
         print(type(error))
