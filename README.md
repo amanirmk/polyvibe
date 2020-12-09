@@ -1,5 +1,7 @@
 # muse
 
-figuring out web app / api stuff
+spotify part complete
 
-public for convenience, but very much a test/work in progress so dont judge!
+trying to set up on heroku (struggling)
+
+apple music to come
