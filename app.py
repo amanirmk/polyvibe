@@ -64,5 +64,5 @@ def loading():
 def display():
     return render_template("analysis.html", info=data["plots"])
 
-if __name__ == '__main__':
+def run_app():
     app.run(debug=True, use_reloader=True)
