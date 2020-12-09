@@ -7,6 +7,8 @@ from urllib.parse import quote
 import matplotlib.pyplot as plt
 from collections import Counter
 
+plt.switch_backend('Agg')
+
 base = "https://api.spotify.com/v1"
 
 def analyze_spotify(access_token):

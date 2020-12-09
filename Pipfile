@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
+requests = "*"
+numpy = "*"
+matplotlib = "*"
 
 [dev-packages]
 
