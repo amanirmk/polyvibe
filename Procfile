@@ -1,2 +1,2 @@
-web: gunicorn app:run_app --preload
+web:gunicorn app:app --preload --log-file=-
 heroku ps:scale web=1
