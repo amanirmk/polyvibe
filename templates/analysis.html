@@ -20,12 +20,108 @@
         <div style="height: 60px"></div>
         <div class="row">
             <div class="content">
-                <img src="data:image/png;base64, {{ top_artists_img }}">
+                <img id="profile-photo" src={{ info['user_image'] }}>
+                <div class="graph-title">{{ info['user_name'] }}</div>
+                <div class="text" style="text-align: center;">{{ info['incomplete_data'] }}</div>
             </div>
             <div class="content">
-                <img src="data:image/png;base64, {{ top_genres_img }}">
+                <div class="graph-title">Your Top Tracks</div>
+                <div style="display: flex; flex-direction: row; justify-content: center; padding-top: 10px; padding-bottom: 10px;">
+                    <div style="display:flex; flex-direction: column; width: 20px; padding-left: 2%; padding-right: 2%">
+                        <div style="text-align: center; font-family: 'lineto'; padding-bottom: 15px;">Rank</div>
+                        <div class="num" style="padding-top: 10px;"> 1. </div>
+                        {% for num in range(2,10+1) %} <div class="num">{{num}}.</div> {% endfor %}
+                    </div>
+                    {% for term in ["Long Term", "Medium Term", "Short Term"] %}
+                    <div style="display:flex; flex-direction: column; width: 30%; padding-left: 2%; padding-right: 2%;">
+                        <div style="text-align: center; font-family: 'lineto'; padding-bottom: 10px;">{{term}}</div>
+                        {% for track in info["top_tracks"][loop.index0][:10] %} <div class="track">{{track}}</div> {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="desc">according to affinity calculated by Spotify</div>
             </div>
         </div>
+        <div class="row">
+            <div class="content">
+                <div class="graph-title">Artist Diversity</div>
+                <img src="data:image/png;base64, {{ info['artists_pie_chart'] }}">
+                <div class="desc">as represented by tracks in your library and playlists</div>
+            </div>
+            <div class="content">
+                <div class="graph-title">Your Top Artists</div>
+                <img src="data:image/png;base64, {{ info['top_artists_img'] }}">
+                <div class="desc">according to affinity calculated by Spotify</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="content">
+                <div class="graph-title">Genre Diversity</div>
+                <img src="data:image/png;base64, {{ info['genres_pie_chart'] }}">
+                <div class="desc">as represented by artists of tracks in your library and playlists</div>
+            </div>
+            <div class="content">
+                <div class="graph-title">Your Top Genres</div>
+                <img src="data:image/png;base64, {{ info['top_genres_img'] }}">
+                <div class="desc">as represented by your top artists</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="content">
+                <div class="graph-title">Valence Distribution</div>
+                <img src="data:image/png;base64, {{ info['features_imgs'][0] }}">
+                <div class="desc">as represented by tracks in your library and playlists</div>
+                <div style="display:flex; flex-direction:row; align-items: center;">
+                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/valence.png') }}">
+                    <div class="stat">mean: {{ info['feature_means'][0] }}</div>
+                </div>
+                <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
+            </div>
+            <div class="content">
+                <div class="graph-title">Energy Distribution</div>
+                <img src="data:image/png;base64, {{ info['features_imgs'][1] }}">
+                <div class="desc">as represented by tracks in your library and playlists</div>
+                <div style="display:flex; flex-direction:row; align-items: center;">
+                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/energy.png') }}">
+                    <div class="stat">mean: {{ info['feature_means'][1] }}</div>
+                </div>
+                <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="content">
+                <div class="graph-title">Danceability Distribution</div>
+                <img src="data:image/png;base64, {{ info['features_imgs'][2] }}">
+                <div class="desc">as represented by tracks in your library and playlists</div>
+                <div style="display:flex; flex-direction:row; align-items: center;">
+                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/danceability.png') }}">
+                    <div class="stat">mean: {{ info['feature_means'][2] }}</div>
+                </div>
+                <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
+            </div>
+            <div class="content">
+                <div class="graph-title">Popularity Distribution</div>
+                <img src="data:image/png;base64, {{ info['features_imgs'][3] }}">
+                <div class="desc">as represented by tracks in your library and playlists</div>
+                <div style="display:flex; flex-direction:row; align-items: center;">
+                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/placeholder.png') }}">
+                    <div class="stat">mean: {{ info['feature_means'][3] }}</div>
+                </div>
+            </div>
+        </div>
+        {% if info["recommendations"] %}
+        <div class="graph-title" style="padding-bottom: 20px;"> Track Recommendations </div>
+        <div class="row">
+            <div class="content" style="display: flex; flex-direction: column;">
+                {% for track in info["recommendations"][:10] %} <div class="track" style="margin: 0 2.5% 0 2.5%; line-height: 50px;">"{{track[0]}}" by {{track[1]}}</div> {% endfor %}
+            </div>
+            <div class="content" style="display: flex; flex-direction: column;">
+                {% for track in info["recommendations"][10:] %} <div class="track" style="margin: 0 2.5% 0 2.5%; line-height: 50px;">"{{track[0]}}" by {{track[1]}}</div> {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="height: 60px"></div>
     </body>
 
 </html>

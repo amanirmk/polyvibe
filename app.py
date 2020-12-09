@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
-redirect_uri = "http://localhost:8888/callback" #change later
+redirect_uri = "https://amanirmk.github.io/muse/callback"
 scope = "user-top-read playlist-read-private playlist-read-collaborative user-library-read"
 
 data = {}
@@ -50,13 +50,19 @@ def getInfo():
 
 @app.route("/loading")
 def loading():
-    global data
-    data["plots"] = analyze_spotify(data["access_token"])
+    try:
+        global data
+        data["plots"] = analyze_spotify(data["access_token"])
+    except Exception as error:
+        print(type(error))
+        print(error.args)
+        print(error)
+        return render_template("error.html")
     return redirect(url_for("display"))
 
 @app.route("/display")
 def display():
-    return render_template("analysis.html", top_artists_img=data["plots"]["top_artists_img"], top_genres_img=data["plots"]["top_genres_img"])
+    return render_template("analysis.html", info=data["plots"])
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8888, debug=True)
+    app.run(debug=True, use_reloader=True)

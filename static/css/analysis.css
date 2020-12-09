@@ -10,9 +10,85 @@
     width: 50vw;
 }
 
-img {
-    width: inherit;
+.graph-title {
+    font-size: min(5vw, 30px);
+    text-align: center;
+    font-family: "lineto", Arial, Sans-serif;
+    color: black;
+    padding-top: 60px;
+    margin: 0;
+}
+
+.desc {
+    font-size: min(2vw, 12px);
+    text-align: right;
+    font-family: "lineto", Arial, Sans-serif;
+    color: black;
+    padding-right: 10%;
+    margin: 0;
+}
+
+.content img {
+    width: 90%;
+    padding-left: 5%;
+    padding-right: 5%;
     height: auto;
+}
+
+#profile-photo {
+    top: 30px;
+    position: relative;
+    width: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    padding: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px black solid;
+}
+
+.track {
+    font-family: "lineto";
+    font-size: 14px;
+    color: black;
+    width: 90%;
+    height: 50px;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px black solid;
+    overflow: hidden;
+}
+
+.num {
+    font-family: 'lineto';
+    height: 52px;
+    font-size: 16px;
+}
+
+.stat {
+    font-family: 'lineto';
+    font-size: min(5vw, 30px);
+    width:50%;
+    height:100%;
+    line-height:100%;
+}
+
+.spotify-dist::after {
+    content: "Typical Distribution";
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    vertical-align: middle;
+    justify-content: center;
+
+    font-family: "lineto";
+    font-size: min(2vw, 12px);
+    color: black;
 }
 
 @media only screen and (max-width: 920px) {
