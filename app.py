@@ -43,6 +43,8 @@ def getInfo():
             'client_secret': secret_id,
         }
         response = requests.post("https://accounts.spotify.com/api/token", data=post_data)
+        print(json.loads(response.text))
+        print(json.loads(response.text).keys())
         data["access_token"] = json.loads(response.text)["access_token"]
         return render_template("loading.html")
     except:
