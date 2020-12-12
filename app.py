@@ -1,5 +1,7 @@
 import json
 import requests
+import asyncio
+import time
 from analysis import analyze_spotify
 from urllib.parse import quote
 from flask import Flask, request, redirect, render_template, url_for
@@ -8,7 +10,7 @@ app = Flask(__name__)
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
-redirect_uri = "https://polyvibe.herokuapp.com/callback"
+redirect_uri = "http://127.0.0.1:5000/callback" #"https://polyvibe.herokuapp.com/callback"
 scope = "user-top-read playlist-read-private playlist-read-collaborative user-library-read"
 
 data = {}
@@ -52,9 +54,9 @@ def getInfo():
 def loading():
     try:
         global data
-        print(data)
-        print(data.keys())
-        data["plots"] = analyze_spotify(data["access_token"])
+        start = time.time()
+        data["plots"] = asyncio.run(analyze_spotify(data["access_token"]))
+        print("time elapsed:", time.time() - start)
     except Exception as error:
         print(type(error))
         print(error.args)

@@ -3,6 +3,7 @@ import requests
 import io
 import base64
 import numpy as np
+import asyncio
 from urllib.parse import quote
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -11,11 +12,78 @@ plt.switch_backend('Agg')
 
 base = "https://api.spotify.com/v1"
 
-def analyze_spotify(access_token):
+async def analyze_spotify(access_token):
+
     auth_header = {"Authorization": "Bearer " + access_token}
 
-    incompleteData = False
+    incomplete_data = False
 
+    all_tracks = {}
+    all_artists = {}
+
+    long_term_tracks = []
+    medium_term_tracks = []
+    short_term_tracks = []
+    tracks = [long_term_tracks, medium_term_tracks, short_term_tracks]
+
+    long_term_artists = []
+    medium_term_artists = []
+    short_term_artists = []
+    artists = [long_term_artists, medium_term_artists, short_term_artists]
+
+    #get user info
+    user_info_co = get_user_info(incomplete_data, auth_header)
+
+    #get top tracks
+    top_tracks_co = get_top_tracks(tracks, all_tracks, incomplete_data, auth_header)
+    
+    #get top artists
+    top_artists_co = get_top_artists(artists, all_artists, incomplete_data, auth_header)
+
+    #get all saved tracks in library
+    library_co = collect_library(all_artists, all_tracks, auth_header, incomplete_data)
+
+    #get all playlists
+    playlists_co = collect_playlists(all_artists, all_tracks, incomplete_data, auth_header)
+
+    #first batch of asynchronous results
+    result = await asyncio.gather(user_info_co, top_tracks_co, top_artists_co, library_co, playlists_co)
+    [user_name, user_image, inc_data1], [track_names, inc_data2], [artist_names, inc_data3], inc_data4, inc_data5 = result
+    incomplete_data == (inc_data1 or inc_data2 or inc_data3 or inc_data4 or inc_data5)
+
+    #get graphs
+    top_a_co = top_artists(artist_names)
+    a_div_co = artist_diversity(all_tracks)
+    top_g_co = top_genres(artists)
+    g_div_co = genre_diversity(all_artists)
+    feat_co = features(all_tracks, incomplete_data, auth_header)
+
+    #second batch of asynchronous results
+    top_a_img, a_div_img, top_g_img, g_div_img, [feature_graphs, means, incomplete_data] = await asyncio.gather(top_a_co, a_div_co, top_g_co, g_div_co, feat_co)
+
+    #do last bc need means
+    recs_list = await recommendations(artists, means, auth_header)
+
+    incomplete_data_msg = ""
+    if incomplete_data:
+        incomplete_data_msg = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
+        
+    plot_data = {
+        "incomplete_data" : incomplete_data_msg,
+        "user_name" : user_name,
+        "user_image" : user_image,
+        "top_tracks" : track_names,
+        "top_artists_img" : top_a_img,
+        "artists_pie_chart": a_div_img,
+        "top_genres_img" : top_g_img,
+        "genres_pie_chart": g_div_img,
+        "features_imgs" : feature_graphs,
+        "feature_means" : means,
+        "recommendations" : recs_list
+    }
+    return plot_data 
+
+async def get_user_info(incomplete_data, auth_header):
     user_name = "username"
     user_image = "../static/media/blank_profile.png"
     # get user info
@@ -31,21 +99,10 @@ def analyze_spotify(access_token):
             print("User profile image unavailable")
     else:
         print("Failed to retrieve user profile data")
-        incompleteData = True
-    
-    all_tracks = {}
-    all_artists = {}
+        incomplete_data = True
+    return user_name, user_image, incomplete_data
 
-    long_term_tracks = []
-    medium_term_tracks = []
-    short_term_tracks = []
-    tracks = [long_term_tracks, medium_term_tracks, short_term_tracks]
-
-    long_term_artists = []
-    medium_term_artists = []
-    short_term_artists = []
-    artists = [long_term_artists, medium_term_artists, short_term_artists]
-
+async def get_top_tracks(tracks, all_tracks, incomplete_data, auth_header):
     #get top tracks
     for i,term in enumerate(["long_term", "medium_term", "short_term"]):
         response = requests.get(base + "/me/top/tracks", params={"time_range":term, "limit":25}, headers=auth_header)
@@ -56,13 +113,14 @@ def analyze_spotify(access_token):
                 all_tracks.update(track)
         else:
             print("Failed to retrieve {} top tracks".format(term))
-            incompleteData = True 
-    l_t_names = [list(track.keys())[0] for track in long_term_tracks]
-    m_t_names = [list(track.keys())[0] for track in medium_term_tracks]
-    s_t_names = [list(track.keys())[0] for track in short_term_tracks]
+            incomplete_data = True 
+    l_t_names = [list(track.keys())[0] for track in tracks[0]]
+    m_t_names = [list(track.keys())[0] for track in tracks[1]]
+    s_t_names = [list(track.keys())[0] for track in tracks[2]]
     track_names = [l_t_names, m_t_names, s_t_names]
-    
-    #get top artists
+    return track_names, incomplete_data
+
+async def get_top_artists(artists, all_artists, incomplete_data, auth_header):
     for i,term in enumerate(["long_term", "medium_term", "short_term"]):
         response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":10}, headers=auth_header)
         if response.status_code == requests.codes.ok:
@@ -72,91 +130,14 @@ def analyze_spotify(access_token):
                 all_artists.update(artist)
         else:
             print("Failed to retrieve {} top artists".format(term))
-            incompleteData = True 
-    l_a_names = [list(artist.keys())[0] for artist in long_term_artists]
-    m_a_names = [list(artist.keys())[0] for artist in medium_term_artists]
-    s_a_names = [list(artist.keys())[0] for artist in short_term_artists]
+            incomplete_data = True 
+    l_a_names = [list(artist.keys())[0] for artist in artists[0]]
+    m_a_names = [list(artist.keys())[0] for artist in artists[1]]
+    s_a_names = [list(artist.keys())[0] for artist in artists[2]]
+    artist_names = [l_a_names, m_a_names, s_a_names]
+    return artist_names, incomplete_data
 
-    #get all saved tracks in library
-    collectedLibrary = False
-    collected = 0
-    while not collectedLibrary:
-        response = requests.get(base + "/me/tracks", params={"limit":50, "offset":collected}, headers=auth_header)
-        if response.status_code == requests.codes.ok:
-            tracks_data = json.loads(response.text)["items"]
-            success = updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header)
-            if not success:
-                print("Failed to retrieve artists of saved tracks on batch {}".format(collected // 50))
-                incompleteData = True
-            new = len(tracks_data)
-            collected += new
-            collectedLibrary = new < 50
-        else:
-            print("Failed to retrieve saved tracks on batch {}".format(collected // 50))
-            incompleteData = True
-            collectedLibrary = True #don't want to get stuck
-
-    #get all playlists
-    collectedPlaylists = False
-    collected = 0
-    while not collectedPlaylists:
-        response = requests.get(base + "/me/playlists", params={"limit":50, "offset":collected}, headers=auth_header)
-        if response.status_code == requests.codes.ok:
-            playlist_data = json.loads(response.text)["items"]
-            for playlist in playlist_data:
-                tracks_response = requests.get(playlist["tracks"]["href"], headers=auth_header)
-                if tracks_response.status_code == requests.codes.ok:
-                    tracks_json = json.loads(tracks_response.text)
-                    tracks_data = tracks_json["items"]
-                    while tracks_json["next"]:
-                        tracks_response = requests.get(tracks_json["next"], headers=auth_header)
-                        if tracks_response.status_code == requests.codes.ok:
-                            tracks_json = json.loads(tracks_response.text)
-                            tracks_data.extend(tracks_json["items"])
-                        else:
-                            print("Failed to retrieve additional tracks from playlist")
-                            incompleteData = True
-                    tracks_data = [track["track"] for track in tracks_data]
-                    success = updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header)
-                    if not success:
-                        print("Failed to retrieve artists of saved tracks from playlist")
-                        incompleteData = True
-                else:
-                    print("Failed to retrieve any tracks from the playlist")
-                    incompleteData = True
-            new = len(playlist_data)
-            collected += new
-            collectedPlaylists = new < 50
-        else:
-            print("Failed to retrieve a playlist")
-            incompleteData = True
-            collectedPlaylists = True #don't want to get stuck
-
-    feature_graphs, means, success = features(all_tracks, auth_header)
-    if not success:
-        incompleteData = True
-
-    if incompleteData:
-        incompleteData = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
-    else:
-        incompleteData = ""
-
-    plot_data = {
-        "incomplete_data" : incompleteData,
-        "user_name" : user_name,
-        "user_image" : user_image,
-        "top_tracks" : track_names,
-        "top_artists_img" : top_artists(l_a_names, m_a_names, s_a_names),
-        "artists_pie_chart": artist_diversity(all_tracks),
-        "top_genres_img" : top_genres(artists),
-        "genres_pie_chart": genre_diversity(all_artists),
-        "features_imgs" : feature_graphs,
-        "feature_means" : means,
-        "recommendations" : recommendations(artists, means, auth_header)
-    }
-    return plot_data 
-
-def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
+async def update_all_from_tracks(all_artists, all_tracks, tracks_data, auth_header):
     #if not tracks, do nothing
     if not tracks_data:
         return True
@@ -183,7 +164,67 @@ def updateAllFromTracks(all_artists, all_tracks, tracks_data, auth_header):
             success = False
     return success
 
-def top_artists(l_a_names, m_a_names, s_a_names):
+async def collect_library(all_artists, all_tracks, auth_header, incomplete_data):
+    collected_library = False
+    collected = 0
+    while not collected_library:
+        response = requests.get(base + "/me/tracks", params={"limit":50, "offset":collected}, headers=auth_header)
+        if response.status_code == requests.codes.ok:
+            tracks_data = json.loads(response.text)["items"]
+            success = await update_all_from_tracks(all_artists, all_tracks, tracks_data, auth_header)
+            if not success:
+                print("Failed to retrieve artists of saved tracks on batch {}".format(collected // 50))
+                incomplete_data = True
+            new = len(tracks_data)
+            collected += new
+            collected_library = new < 50
+        else:
+            print("Failed to retrieve saved tracks on batch {}".format(collected // 50))
+            incomplete_data = True
+            collected_library = True #don't want to get stuck
+        return incomplete_data
+
+async def collect_playlists(all_artists, all_tracks, incomplete_data, auth_header):
+    collected_playlists = False
+    collected = 0
+    update_cos = []
+    while not collected_playlists:
+        response = requests.get(base + "/me/playlists", params={"limit":50, "offset":collected}, headers=auth_header)
+        if response.status_code == requests.codes.ok:
+            playlist_data = json.loads(response.text)["items"]
+            for playlist in playlist_data:
+                tracks_response = requests.get(playlist["tracks"]["href"], headers=auth_header)
+                if tracks_response.status_code == requests.codes.ok:
+                    tracks_json = json.loads(tracks_response.text)
+                    tracks_data = tracks_json["items"]
+                    while tracks_json["next"]:
+                        tracks_response = requests.get(tracks_json["next"], headers=auth_header)
+                        if tracks_response.status_code == requests.codes.ok:
+                            tracks_json = json.loads(tracks_response.text)
+                            tracks_data.extend(tracks_json["items"])
+                        else:
+                            print("Failed to retrieve additional tracks from playlist")
+                            incomplete_data = True
+                    tracks_data = [track["track"] for track in tracks_data]
+                    update_cos.append(update_all_from_tracks(all_artists, all_tracks, tracks_data, auth_header))
+                else:
+                    print("Failed to retrieve any tracks from the playlist")
+                    incomplete_data = True
+            new = len(playlist_data)
+            collected += new
+            collected_playlists = new < 50
+        else:
+            print("Failed to retrieve a playlist")
+            incomplete_data = True
+            collected_playlists = True #don't want to get stuck
+        successes = await asyncio.gather(*update_cos)
+        if not all(successes):
+            print("Failed to retrieve artists of saved tracks a playlist")
+            incomplete_data = True
+        return incomplete_data
+
+async def top_artists(artist_names):
+    l_a_names, m_a_names, s_a_names = artist_names
     plt.style.use('ggplot')
     plt.rc("font", family="serif")
     artist_set = set()
@@ -225,7 +266,7 @@ def top_artists(l_a_names, m_a_names, s_a_names):
     artists_pic = quote(base64.b64encode(img.read()).decode())
     return artists_pic
 
-def top_genres(artists_terms_list):
+async def top_genres(artists_terms_list):
     term_genres = [Counter(), Counter(), Counter()] #long, med, short
     for i,term in enumerate(artists_terms_list):
         for artist in term:
@@ -260,7 +301,8 @@ def top_genres(artists_terms_list):
     genres_stack_plot = quote(base64.b64encode(img.read()).decode())
     return genres_stack_plot
 
-def genre_diversity(artists_dict):
+async def genre_diversity(artists_dict):
+    global start_time
     genre_counts = Counter()
     for artist_name in artists_dict:
         artist = artists_dict[artist_name]
@@ -279,7 +321,8 @@ def genre_diversity(artists_dict):
     genres_pie_chart = quote(base64.b64encode(img.read()).decode())
     return genres_pie_chart
 
-def artist_diversity(tracks_dict):
+async def artist_diversity(tracks_dict):
+    global start_time
     artist_counts = Counter()
     for track_name in tracks_dict:
         track = tracks_dict[track_name]
@@ -298,8 +341,8 @@ def artist_diversity(tracks_dict):
     artist_pie_chart = quote(base64.b64encode(img.read()).decode())
     return artist_pie_chart
     
-def features(tracks_dict, auth_header):
-    success = True
+async def features(tracks_dict, incomplete_data, auth_header):
+    global start_time
     valence = []
     energy = []
     danceability = []
@@ -321,7 +364,7 @@ def features(tracks_dict, auth_header):
                     energy.append(audio_object["energy"])
                     danceability.append(audio_object["danceability"])
         else:
-            success = False
+            incomplete_data = True
             print("Failed to retrieve features on batch " + str(i//100))
     imgs = []
     means = []
@@ -335,10 +378,10 @@ def features(tracks_dict, auth_header):
         img.seek(0)
         imgs.append(quote(base64.b64encode(img.read()).decode()))
         means.append(round(sum(category)/len(category), 2))
-    
-    return imgs, means, success
+    return imgs, means, incomplete_data
 
-def recommendations(artists, means, auth_header):
+async def recommendations(artists, means, auth_header):
+    global start_time
     #top 5 artists, short term prioritized
     artists = artists[2]+artists[1]+artists[0]
     artists = [artist[list(artist.keys())[0]]["id"] for artist in artists]
