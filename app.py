@@ -2,19 +2,25 @@ import json
 import requests
 from analysis import *
 from urllib.parse import quote
-from flask import Flask, request, redirect, render_template, url_for
+from flask_session import Session
+from flask import Flask, request, redirect, render_template, url_for, session
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "this is going on github anyways"
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
 redirect_uri = "https://polyvibe.herokuapp.com/callback"
 scope = "user-top-read playlist-read-private playlist-read-collaborative user-library-read"
 
-data = {}
-
 @app.route("/")
 def index():
+    session.pop("access_key", None)
+    session.pop("method_data", None)
+    session.pop("plot_data", None)
     return render_template("index.html")
 
 @app.route("/authorization")
@@ -43,10 +49,9 @@ def getInfo():
             'client_secret': secret_id,
         }
         response = requests.post("https://accounts.spotify.com/api/token", data=post_data)
-        data["access_token"] = json.loads(response.text)["access_token"]
+        session["access_token"] = json.loads(response.text)["access_token"]
         return render_template("loading.html", action="/loading1", msg="Collecting your top songs...")
     except:
-        data = {} #restart
         return render_template("error.html")
 
 # i split analysis into several 
@@ -58,14 +63,13 @@ def getInfo():
 def loading1():
     global data
     try:
-        data["plot_data"] = {}
-        data["method_data"] = {"auth_header" : {"Authorization" : "Bearer " + data["access_token"]}}
-        collect_top(data["method_data"], data["plot_data"])
+        session["plot_data"] = {}
+        session["method_data"] = {"auth_header" : {"Authorization" : "Bearer " + session["access_token"]}}
+        collect_top(session["method_data"], session["plot_data"])
     except Exception as error:
         print(type(error))
         print(error.args)
         print(error)
-        data = {} #restart
         return render_template("error.html")
     return render_template("loading.html", action="/loading2", msg="Collecting your saved tracks...")
 
@@ -73,8 +77,8 @@ def loading1():
 def loading2():
     global data
     try:
-        collect_library(data["method_data"])
-        if data["method_data"]["collected_library"]:
+        collect_library(session["method_data"])
+        if session["method_data"]["collected_library"]:
             return render_template("loading.html", action="/loading3", msg="Collecting your playlists...")
         else:
             return redirect(url_for("loading2"))
@@ -82,15 +86,14 @@ def loading2():
         print(type(error))
         print(error.args)
         print(error)
-        data = {} #restart
         return render_template("error.html")
 
 @app.route("/loading3")
 def loading3():
     global data
     try:
-        collect_playlists(data["method_data"])
-        if data["method_data"]["collected_playlists"] and data["method_data"]["collected_tracks"]:
+        collect_playlists(session["method_data"])
+        if session["method_data"]["collected_playlists"] and session["method_data"]["collected_tracks"]:
             return render_template("loading.html", action="/loading4", msg="Analyzing your artists and genres...")
         else:
             return redirect(url_for("loading3"))
@@ -98,22 +101,20 @@ def loading3():
         print(type(error))
         print(error.args)
         print(error)
-        data = {} #restart
         return render_template("error.html")
 
 @app.route("/loading4")
 def loading4():
     global data
     try:
-        top_artists(data["method_data"], data["plot_data"])
-        top_genres(data["method_data"], data["plot_data"])
-        artist_diversity(data["method_data"], data["plot_data"])
-        genre_diversity(data["method_data"], data["plot_data"])
+        top_artists(session["method_data"], session["plot_data"])
+        top_genres(session["method_data"], session["plot_data"])
+        artist_diversity(session["method_data"], session["plot_data"])
+        genre_diversity(session["method_data"], session["plot_data"])
     except Exception as error:
         print(type(error))
         print(error.args)
         print(error)
-        data = {} #restart
         return render_template("error.html")
     return render_template("loading.html", action="/loading5", msg="Analyzing your tracks...")
 
@@ -121,24 +122,23 @@ def loading4():
 def loading5():
     global data
     try:
-        features(data["method_data"], data["plot_data"])
-        recommendations(data["method_data"], data["plot_data"])
+        features(session["method_data"], session["plot_data"])
+        recommendations(session["method_data"], session["plot_data"])
     except Exception as error:
         print(type(error))
         print(error.args)
         print(error)
-        data = {} #restart
         return render_template("error.html")
     return redirect(url_for("display"))
 
 @app.route("/display")
 def display():
     global data
-    if data["method_data"]["incomplete_data_status"]:
-        data["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
+    if session["method_data"]["incomplete_data_status"]:
+        session["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
     else:
-        data["plot_data"]["incomplete_data_msg"] = ""
-    return render_template("analysis.html", info=data["plot_data"])
+        session["plot_data"]["incomplete_data_msg"] = ""
+    return render_template("analysis.html", info=session["plot_data"])
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
