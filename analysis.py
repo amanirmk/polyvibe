@@ -10,7 +10,7 @@ from collections import Counter
 
 plt.switch_backend('Agg')
 
-time_limit = 25 #need to avoid 30 sec timeout on heroku
+time_limit = 20 #need to avoid 30 sec timeout on heroku
 
 base = "https://api.spotify.com/v1"
 

@@ -38,7 +38,6 @@ def authorize():
 
 @app.route("/callback")
 def getInfo():
-    global data
     try:
         code = request.args['code']
         post_data = {
@@ -61,7 +60,6 @@ def getInfo():
 # it is entirely complete
 @app.route("/loading1")
 def loading1():
-    global data
     try:
         session["plot_data"] = {}
         session["method_data"] = {"auth_header" : {"Authorization" : "Bearer " + session["access_token"]}}
@@ -75,7 +73,6 @@ def loading1():
 
 @app.route("/loading2")
 def loading2():
-    global data
     try:
         collect_library(session["method_data"])
         if session["method_data"]["collected_library"]:
@@ -90,11 +87,10 @@ def loading2():
 
 @app.route("/loading3")
 def loading3():
-    global data
     try:
         collect_playlists(session["method_data"])
         if session["method_data"]["collected_playlists"] and session["method_data"]["collected_tracks"]:
-            return render_template("loading.html", action="/loading4", msg="Analyzing your artists and genres...")
+            return render_template("loading.html", action="/loading4", msg="Analyzing your artists...")
         else:
             return redirect(url_for("loading3"))
     except Exception as error:
@@ -105,22 +101,30 @@ def loading3():
 
 @app.route("/loading4")
 def loading4():
-    global data
     try:
         top_artists(session["method_data"], session["plot_data"])
-        top_genres(session["method_data"], session["plot_data"])
         artist_diversity(session["method_data"], session["plot_data"])
+    except Exception as error:
+        print(type(error))
+        print(error.args)
+        print(error)
+        return render_template("error.html")
+    return render_template("loading.html", action="/loading5", msg="Analyzing your genres...")
+
+@app.route("/loading5")
+def loading5():
+    try:
+        top_genres(session["method_data"], session["plot_data"])
         genre_diversity(session["method_data"], session["plot_data"])
     except Exception as error:
         print(type(error))
         print(error.args)
         print(error)
         return render_template("error.html")
-    return render_template("loading.html", action="/loading5", msg="Analyzing your tracks...")
+    return render_template("loading.html", action="/loading6", msg="Analyzing your tracks...")
 
-@app.route("/loading5")
-def loading5():
-    global data
+@app.route("/loading6")
+def loading6():
     try:
         features(session["method_data"], session["plot_data"])
         recommendations(session["method_data"], session["plot_data"])
@@ -133,7 +137,6 @@ def loading5():
 
 @app.route("/display")
 def display():
-    global data
     if session["method_data"]["incomplete_data_status"]:
         session["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
     else:
