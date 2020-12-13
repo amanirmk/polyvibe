@@ -19,10 +19,6 @@
     <body>
         <div style="height: 60px"></div>
 
-        <div id="img-popup" class="modal">
-            <img class="modal-content" id="modal-img">
-        </div>
-
         <div class="row">
             <div id="photo-div" class="content">
                 <img id="profile-photo" src={{ info['user_image'] }}>
@@ -51,44 +47,44 @@
         <div class="row">
             <div class="content">
                 <div class="graph-title">Artist Diversity</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['artists_pie_chart'] }}" onclick="zoomImg('artists_pie_chart')" id="artists_pie_chart">
+                <img class="zm-img" src="data:image/png;base64, {{ info['artists_pie_chart'] }}">
                 <div class="desc">as represented by tracks in your library and playlists</div>
             </div>
             <div class="content">
                 <div class="graph-title">Your Top Artists</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['top_artists_img'] }}" onclick="zoomImg('top_artists_img')" id="top_artists_img">
+                <img class="zm-img" src="data:image/png;base64, {{ info['top_artists_img'] }}">
                 <div class="desc">according to affinity calculated by Spotify</div>
             </div>
         </div>
         <div class="row">
             <div class="content">
                 <div class="graph-title">Genre Diversity</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['genres_pie_chart'] }}" onclick="zoomImg('genres_pie_chart')" id="genres_pie_chart">
+                <img class="zm-img" src="data:image/png;base64, {{ info['genres_pie_chart'] }}">
                 <div class="desc">as represented by artists of tracks in your library and playlists</div>
             </div>
             <div class="content">
                 <div class="graph-title">Your Top Genres</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['top_genres_img'] }}" onclick="zoomImg('top_genres_img')" id="top_genres_img">
+                <img class="zm-img" src="data:image/png;base64, {{ info['top_genres_img'] }}">
                 <div class="desc">as represented by your top artists</div>
             </div>
         </div>
         <div class="row">
             <div class="content">
                 <div class="graph-title">Valence Distribution</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][0] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][0] }}">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/valence.png') }}" onclick="zoomImg('valence')" id="valence">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/valence.png') }}">
                     <div class="stat">mean: {{ info['feature_means'][0] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
             </div>
             <div class="content">
                 <div class="graph-title">Energy Distribution</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][1] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][1] }}">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/energy.png') }}" onclick="zoomImg('energy')" id="energy">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/energy.png') }}">
                     <div class="stat">mean: {{ info['feature_means'][1] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
@@ -97,17 +93,17 @@
         <div class="row">
             <div class="content">
                 <div class="graph-title">Danceability Distribution</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][2] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][2] }}">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/danceability.png') }}" onclick="zoomImg('danceability')" id="danceability">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/danceability.png') }}">
                     <div class="stat">mean: {{ info['feature_means'][2] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
             </div>
             <div class="content">
                 <div class="graph-title">Popularity Distribution</div>
-                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][3] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][3] }}">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
                     <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/placeholder.png') }}">
@@ -126,8 +122,6 @@
             </div>
         </div>
         {% endif %}
-
-        <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 
         <div style="height: 60px"></div>
     </body>
