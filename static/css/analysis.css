@@ -44,11 +44,6 @@
     height: auto;
 }
 
-.zm-img:hover {
-    opacity: 50%;
-    cursor: pointer;
-}
-
 #profile-photo {
     top: 30px;
     position: relative;
