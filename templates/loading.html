@@ -19,8 +19,8 @@
     <body>
         <div class="center">
             <img id="loading-icon" src="{{ url_for('static', filename='media/loading.gif') }}">
-            <form action="/loading" name="loading" id="loading-text" class="text" style="font-size: min(7vw, 40px); color: #8D7EF2; transition: color 0.5s;">
-                Analyzing your music...
+            <form action={{action}} name="loading" id="loading-text" class="text" style="font-size: min(7vw, 40px); color: #8D7EF2; transition: color 0.5s;">
+                {{msg}}
             </form>
         </div>
 

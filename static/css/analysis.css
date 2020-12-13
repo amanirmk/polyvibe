@@ -10,6 +10,14 @@
     width: 50vw;
 }
 
+#photo-div {
+    width: 30vw;
+}
+
+#top-tracks-div {
+    width: 70vw;
+}
+
 .graph-title {
     font-size: min(5vw, 30px);
     text-align: center;
@@ -97,5 +105,13 @@
     }
     .row .content {
         width: 100vw;
+    }
+
+    #photo-div {
+        width: 70vw;
+    }
+    
+    #top-tracks-div {
+        width: 90vw;
     }
 }

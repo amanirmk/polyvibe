@@ -78,4 +78,8 @@
     #name {
         display: none;
     }
+
+    #main-title {
+        float: none;
+    }
 }

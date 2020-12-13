@@ -19,12 +19,12 @@
     <body>
         <div style="height: 60px"></div>
         <div class="row">
-            <div class="content">
+            <div id="photo-div" class="content">
                 <img id="profile-photo" src={{ info['user_image'] }}>
                 <div class="graph-title">{{ info['user_name'] }}</div>
-                <div class="text" style="text-align: center;">{{ info['incomplete_data'] }}</div>
+                <div class="text" style="text-align: center;">{{ info['incomplete_data_msg'] }}</div>
             </div>
-            <div class="content">
+            <div id="top-tracks-div" class="content">
                 <div class="graph-title">Your Top Tracks</div>
                 <div style="display: flex; flex-direction: row; justify-content: center; padding-top: 10px; padding-bottom: 10px;">
                     <div style="display:flex; flex-direction: column; width: 20px; padding-left: 2%; padding-right: 2%">
