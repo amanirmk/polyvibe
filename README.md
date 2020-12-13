@@ -1,7 +1,5 @@
 # polyvibe
 
-spotify part complete
+Analyzes a Spotify user's listening history and provides detailed statistics regarding their choice of music.
 
-trying to set up on heroku (struggling)
-
-apple music to come
+Apple Music support possibly coming in the future.
