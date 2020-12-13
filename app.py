@@ -15,8 +15,6 @@ data = {}
 
 @app.route("/")
 def index():
-    global data
-    data = {} #restart
     return render_template("index.html")
 
 @app.route("/authorization")
@@ -34,8 +32,8 @@ def authorize():
 
 @app.route("/callback")
 def getInfo():
+    global data
     try:
-        global data
         code = request.args['code']
         post_data = {
             "grant_type": "authorization_code",
@@ -135,6 +133,7 @@ def loading5():
 
 @app.route("/display")
 def display():
+    global data
     if data["method_data"]["incomplete_data_status"]:
         data["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
     else:
