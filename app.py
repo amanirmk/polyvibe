@@ -48,6 +48,7 @@ def getInfo():
         data["access_token"] = json.loads(response.text)["access_token"]
         return render_template("loading.html", action="/loading1", msg="Collecting your top songs...")
     except:
+        data = {} #restart
         return render_template("error.html")
 
 # i split analysis into several 
@@ -66,6 +67,7 @@ def loading1():
         print(type(error))
         print(error.args)
         print(error)
+        data = {} #restart
         return render_template("error.html")
     return render_template("loading.html", action="/loading2", msg="Collecting your saved tracks...")
 
@@ -82,6 +84,7 @@ def loading2():
         print(type(error))
         print(error.args)
         print(error)
+        data = {} #restart
         return render_template("error.html")
 
 @app.route("/loading3")
@@ -97,6 +100,7 @@ def loading3():
         print(type(error))
         print(error.args)
         print(error)
+        data = {} #restart
         return render_template("error.html")
 
 @app.route("/loading4")
@@ -111,6 +115,7 @@ def loading4():
         print(type(error))
         print(error.args)
         print(error)
+        data = {} #restart
         return render_template("error.html")
     return render_template("loading.html", action="/loading5", msg="Analyzing your tracks...")
 
@@ -124,6 +129,7 @@ def loading5():
         print(type(error))
         print(error.args)
         print(error)
+        data = {} #restart
         return render_template("error.html")
     return redirect(url_for("display"))
 
