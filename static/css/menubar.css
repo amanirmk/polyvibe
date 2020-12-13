@@ -72,6 +72,7 @@
 #name a:hover {
     text-decoration:  none;
     color: #8D7EF2;
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 570px) {

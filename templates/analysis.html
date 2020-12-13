@@ -11,13 +11,18 @@
                 <a href="https://polyvibe.herokuapp.com">polyvibe</a>
             </div>
             <div id="name">
-                <a href="https:/amanirmk.github.io" target="_blank">by AMANI RUNE MAINA-KILAAS</a>
+                <a onclick="window.location = 'https:/amanirmk.github.io'">by AMANI RUNE MAINA-KILAAS</a>
             </div>
         </div>
     </head>
 
     <body>
         <div style="height: 60px"></div>
+
+        <div id="img-popup" class="modal">
+            <img class="modal-content" id="modal-img">
+        </div>
+
         <div class="row">
             <div id="photo-div" class="content">
                 <img id="profile-photo" src={{ info['user_image'] }}>
@@ -42,47 +47,61 @@
                 <div class="desc">according to affinity calculated by Spotify</div>
             </div>
         </div>
+
+        <script>
+            var modal = document.getElementById("img-popup");
+            var modalImg = document.getElementById("modal-img");
+            function zoomImg(id){
+                var imgToDisplay = document.getElementById(id);
+                modal.style.display = "flex";
+                modalImg.src = imgToDisplay.src;
+            }
+            modal.onclick = function() { 
+                modal.style.display = "none";
+            }
+        </script>
+
         <div class="row">
             <div class="content">
                 <div class="graph-title">Artist Diversity</div>
-                <img src="data:image/png;base64, {{ info['artists_pie_chart'] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['artists_pie_chart'] }}" onclick="zoomImg('artists_pie_chart')" id="artists_pie_chart">
                 <div class="desc">as represented by tracks in your library and playlists</div>
             </div>
             <div class="content">
                 <div class="graph-title">Your Top Artists</div>
-                <img src="data:image/png;base64, {{ info['top_artists_img'] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['top_artists_img'] }}" onclick="zoomImg('top_artists_img')" id="top_artists_img">
                 <div class="desc">according to affinity calculated by Spotify</div>
             </div>
         </div>
         <div class="row">
             <div class="content">
                 <div class="graph-title">Genre Diversity</div>
-                <img src="data:image/png;base64, {{ info['genres_pie_chart'] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['genres_pie_chart'] }}" onclick="zoomImg('genres_pie_chart')" id="genres_pie_chart">
                 <div class="desc">as represented by artists of tracks in your library and playlists</div>
             </div>
             <div class="content">
                 <div class="graph-title">Your Top Genres</div>
-                <img src="data:image/png;base64, {{ info['top_genres_img'] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['top_genres_img'] }}" onclick="zoomImg('top_genres_img')" id="top_genres_img">
                 <div class="desc">as represented by your top artists</div>
             </div>
         </div>
         <div class="row">
             <div class="content">
                 <div class="graph-title">Valence Distribution</div>
-                <img src="data:image/png;base64, {{ info['features_imgs'][0] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][0] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/valence.png') }}">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/valence.png') }}" onclick="zoomImg('valence')" id="valence">
                     <div class="stat">mean: {{ info['feature_means'][0] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
             </div>
             <div class="content">
                 <div class="graph-title">Energy Distribution</div>
-                <img src="data:image/png;base64, {{ info['features_imgs'][1] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][1] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/energy.png') }}">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/energy.png') }}" onclick="zoomImg('energy')" id="energy">
                     <div class="stat">mean: {{ info['feature_means'][1] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
@@ -91,17 +110,17 @@
         <div class="row">
             <div class="content">
                 <div class="graph-title">Danceability Distribution</div>
-                <img src="data:image/png;base64, {{ info['features_imgs'][2] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][2] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
-                    <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/danceability.png') }}">
+                    <img class="spotify-dist zm-img" style="width: 50%;" src="{{ url_for('static', filename='media/danceability.png') }}" onclick="zoomImg('danceability')" id="danceability">
                     <div class="stat">mean: {{ info['feature_means'][2] }}</div>
                 </div>
                 <div class="desc" style="text-align:left; padding-left: 10%;">typical Spotify distribution</div>
             </div>
             <div class="content">
                 <div class="graph-title">Popularity Distribution</div>
-                <img src="data:image/png;base64, {{ info['features_imgs'][3] }}">
+                <img class="zm-img" src="data:image/png;base64, {{ info['features_imgs'][3] }}" onclick="zoomImg('features_imgs')" id="features_imgs">
                 <div class="desc">as represented by tracks in your library and playlists</div>
                 <div style="display:flex; flex-direction:row; align-items: center;">
                     <img class="spotify-dist" style="width: 50%;" src="{{ url_for('static', filename='media/placeholder.png') }}">
