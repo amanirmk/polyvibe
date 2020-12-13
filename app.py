@@ -13,7 +13,7 @@ Session(app)
 
 client_id = "69707b9e5dbd449c827fa51833cb8d0a"
 secret_id = "e4dfa6dc0c844256b57b3c2bc73176ea"
-redirect_uri = "https://polyvibe.herokuapp.com/callback"
+redirect_uri = "http://127.0.0.1:5000/callback" #"https://polyvibe.herokuapp.com/callback"
 scope = "user-top-read playlist-read-private playlist-read-collaborative user-library-read"
 
 @app.route("/")
