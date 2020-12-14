@@ -141,7 +141,8 @@ def collect_library(method_data):
             break
         response = requests.get(base + "/me/tracks", params={"limit":50, "offset":collected}, headers=auth_header)
         if response.status_code == requests.codes.ok:
-            tracks_data = json.loads(response.text)["items"]
+            tracks_json = json.loads(response.text)
+            tracks_data = [track["track"] for track in tracks_json["items"]]
             success = update_all_from_tracks(all_artists, all_tracks, tracks_data, auth_header)
             if not success:
                 print("Failed to retrieve artists of saved tracks on batch {}".format(collected // 50))
