@@ -373,7 +373,8 @@ def genre_diversity(method_data, plot_data):
     genre_counts = Counter()
     for artist_name in artists_dict:
         artist = artists_dict[artist_name]
-        genre_counts.update(artist["genres"])
+        if artist["genres"]:
+            genre_counts.update(artist["genres"])
     total = sum(genre_counts.values())
     labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in genre_counts.most_common()]))
     plt.figure(figsize=(10, 6))
@@ -396,7 +397,7 @@ def artist_diversity(method_data, plot_data):
     artist_counts = Counter()
     for track_name in tracks_dict:
         track = tracks_dict[track_name]
-        artist_counts.update([artist["name"] for artist in track["artists"]])
+        artist_counts.update([artist["name"] for artist in track["artists"] if artist["name"]]) #don't count local tracks w/o artist names
     total = sum(artist_counts.values())
     labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in artist_counts.most_common()]))
     plt.figure(figsize=(10, 6))
@@ -427,7 +428,8 @@ def features(method_data, plot_data):
     ids_for_features = []
     for track_name in tracks_dict:
         track = tracks_dict[track_name]
-        popularity.append(track["popularity"]/100)
+        if track["popularity"]: #don't count local tracks w/o ratings
+            popularity.append(track["popularity"]/100)
         ids_for_features.append(track["id"])
     #get features, 100 at a time
     for i in range(0, len(ids_for_features), 100):
