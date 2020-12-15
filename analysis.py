@@ -284,9 +284,9 @@ def collect_playlists(method_data):
 
 
 def top_artists(method_data, plot_data):
-    l_a_names, m_a_names, s_a_names = method_data["artist_names"]
     plt.style.use('ggplot')
     plt.rc("font", family="serif")
+    l_a_names, m_a_names, s_a_names = method_data["artist_names"]
     artist_set = set()
     artist_set.update(l_a_names)
     artist_set.update(m_a_names)
@@ -330,6 +330,8 @@ def top_artists(method_data, plot_data):
 
 
 def top_genres(method_data, plot_data):
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
     artists_terms_list = method_data["artists"]
     term_genres = [Counter(), Counter(), Counter()] #long, med, short
     for i,term in enumerate(artists_terms_list):
@@ -369,6 +371,8 @@ def top_genres(method_data, plot_data):
 
 
 def genre_diversity(method_data, plot_data):
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
     artists_dict = method_data["all_artists"]
     genre_counts = Counter()
     for artist_name in artists_dict:
@@ -393,11 +397,13 @@ def genre_diversity(method_data, plot_data):
 
 
 def artist_diversity(method_data, plot_data):
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
     tracks_dict = method_data["all_tracks"]
     artist_counts = Counter()
     for track_name in tracks_dict:
         track = tracks_dict[track_name]
-        artist_counts.update([artist["name"] for artist in track["artists"] if artist["name"]]) #don't count local tracks w/o artist names
+        artist_counts.update([artist["name"] for artist in track["artists"] if artist["name"]])
     total = sum(artist_counts.values())
     labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in artist_counts.most_common()]))
     plt.figure(figsize=(10, 6))
@@ -416,7 +422,8 @@ def artist_diversity(method_data, plot_data):
 
 
 def features(method_data, plot_data):
-
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
     tracks_dict = method_data["all_tracks"]
     incomplete_data = method_data["incomplete_data_status"]
     auth_header = method_data["auth_header"]
