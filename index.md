@@ -199,7 +199,9 @@ Then it's time to start the actual plotting. I set the figure, the colors, and s
 
 Well, now it's time to make everything look nice. Make a folder called `templates` where you'll put the HTML files. From there, it's about the same as making anything else with HTML. However, for CSS, you want to put those files in a folder called `static` and access them like this: 
 ```html
-<link rel="stylesheet" href="&#123;&#123; url_for('static', filename='css/index.css') &#125;&#125;">
+{% raw %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endraw %}
 ```
 To send your user to the login page, simply place a button with `href="/authorization"` and our web app logic will do the rest.
 
