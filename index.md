@@ -1,6 +1,6 @@
 # How to Make a Spotify Web App 
 
-If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, [**polyvibe**](polyvibe.herokuapp.com), using Python, Flask, and Heroku. It's not a perfect app, but if it seems along the lines of what you'd like to make — keep on reading! I also recommend following along in the actual GitHub repository to help fill in any details I forgot to mention.
+If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, [**polyvibe**](https://polyvibe.herokuapp.com), using Python, Flask, and Heroku. It's not a perfect app, but if it seems along the lines of what you'd like to make — keep on reading! I also recommend following along in the actual GitHub repository to help fill in any details I forgot to mention.
 
 ## Obtaining Spotify API credentials
 
