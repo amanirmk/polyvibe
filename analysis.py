@@ -348,7 +348,11 @@ def top_genres(method_data, plot_data):
     for genre in all_genres_list:
         props = []
         for i in range(3):
-            props.append(term_genres[i][genre]/total_counts[i])
+            if total_counts[i]:
+                props.append(term_genres[i][genre]/total_counts[i])
+            else:
+                print("Total counts in top genres was 0")
+                props.append(0) #not sure why but I was getting a division by zero error, maybe here
         genre_props.append(props)
     all_genres_list, genre_props = list(zip(*sorted(list(zip(all_genres_list, genre_props)), key=(lambda pair: pair[1][::-1]))))
     plt.figure(figsize=(10, 6))
@@ -380,18 +384,22 @@ def genre_diversity(method_data, plot_data):
         if artist["genres"]:
             genre_counts.update(artist["genres"])
     total = sum(genre_counts.values())
-    labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in genre_counts.most_common()]))
-    plt.figure(figsize=(10, 6))
-    plt.gca().set_prop_cycle('color', [plt.cm.tab20(i) for i in np.linspace(0,1,20)])
-    plt.pie(counts, explode=[0.1]+[0]*(len(counts)-1), labels=labels, textprops={'fontsize': 9}, startangle=110)
-    plt.legend(fontsize=7, labels=["{}.  {} ({}%)".format(i+1, item[0], round(100*item[1]/total, 2)) for i,item in enumerate(genre_counts.most_common(30))], loc="upper right")
-    plt.gca().axis('equal')
-    img = io.BytesIO()
-    plt.savefig(img, format='png', bbox_inches='tight')
-    plt.close()
-    img.seek(0)
-    genres_pie_chart = quote(base64.b64encode(img.read()).decode())
-    plot_data["genres_pie_chart"] = genres_pie_chart
+    if total == 0:
+        print("No genres found")
+        plot_data["genres_pie_chart"] = "NA"
+    else:
+        labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in genre_counts.most_common()]))
+        plt.figure(figsize=(10, 6))
+        plt.gca().set_prop_cycle('color', [plt.cm.tab20(i) for i in np.linspace(0,1,20)])
+        plt.pie(counts, explode=[0.1]+[0]*(len(counts)-1), labels=labels, textprops={'fontsize': 9}, startangle=110)
+        plt.legend(fontsize=7, labels=["{}.  {} ({}%)".format(i+1, item[0], round(100*item[1]/total, 2)) for i,item in enumerate(genre_counts.most_common(30))], loc="upper right")
+        plt.gca().axis('equal')
+        img = io.BytesIO()
+        plt.savefig(img, format='png', bbox_inches='tight')
+        plt.close()
+        img.seek(0)
+        genres_pie_chart = quote(base64.b64encode(img.read()).decode())
+        plot_data["genres_pie_chart"] = genres_pie_chart
 
 
 
@@ -405,18 +413,22 @@ def artist_diversity(method_data, plot_data):
         track = tracks_dict[track_name]
         artist_counts.update([artist["name"] for artist in track["artists"] if artist["name"]])
     total = sum(artist_counts.values())
-    labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in artist_counts.most_common()]))
-    plt.figure(figsize=(10, 6))
-    plt.gca().set_prop_cycle('color', [plt.cm.tab20(i) for i in np.linspace(0,1,20)])
-    plt.pie(counts, explode=[0.1]+[0]*(len(counts)-1), labels=labels, textprops={'fontsize': 9}, startangle=110)
-    plt.legend(fontsize=7, labels=["{}.  {} ({}%)".format(i+1, item[0], round(100*item[1]/total, 2)) for i,item in enumerate(artist_counts.most_common(30))], loc="upper right")
-    plt.gca().axis('equal')
-    img = io.BytesIO()
-    plt.savefig(img, format='png', bbox_inches='tight')
-    plt.close()
-    img.seek(0)
-    artists_pie_chart = quote(base64.b64encode(img.read()).decode())
-    plot_data["artists_pie_chart"] = artists_pie_chart
+    if total == 0:
+        print("No artists found")
+        plot_data["artists_pie_chart"] = "NA"
+    else:
+        labels, counts = list(zip(*[(genre, count) if count/total > 0.015 else ("", count) for genre, count in artist_counts.most_common()]))
+        plt.figure(figsize=(10, 6))
+        plt.gca().set_prop_cycle('color', [plt.cm.tab20(i) for i in np.linspace(0,1,20)])
+        plt.pie(counts, explode=[0.1]+[0]*(len(counts)-1), labels=labels, textprops={'fontsize': 9}, startangle=110)
+        plt.legend(fontsize=7, labels=["{}.  {} ({}%)".format(i+1, item[0], round(100*item[1]/total, 2)) for i,item in enumerate(artist_counts.most_common(30))], loc="upper right")
+        plt.gca().axis('equal')
+        img = io.BytesIO()
+        plt.savefig(img, format='png', bbox_inches='tight')
+        plt.close()
+        img.seek(0)
+        artists_pie_chart = quote(base64.b64encode(img.read()).decode())
+        plot_data["artists_pie_chart"] = artists_pie_chart
 
 
 
