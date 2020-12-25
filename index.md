@@ -1,14 +1,15 @@
-## How to Make a Simple Spotify Web App Using Python, Flask, and Heroku
+# How to Make a Spotify Web App 
+### Using Python, Flask, and Heroku
 
-If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, polyvibe. You can check it out [here](polyvibe.herokuapp.com)! It's not perfect, but if it seems along the lines of what you'd like to make — keep reading!
+If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, polyvibe. You can check it out [here](polyvibe.herokuapp.com)! It's not perfect, but if it seems along the lines of what you'd like to make — keep on reading!
 
-### Obtaining Spotify API credentials
+## Obtaining Spotify API credentials
 
-In order to interact with the Spotify API, we're required to have some credentials. Thankfully, all we need is a Spotify account. Visit [the developer dashboard](https://developer.spotify.com/dashboard) and log in. On the [applications page](https://developer.spotify.com/dashboard/applications), create a new app and give it whatever name and description you'd like — you can always change it later.
+In order to interact with the Spotify API, you're required to have some credentials. Thankfully, all you need is a Spotify account. Visit [the developer dashboard](https://developer.spotify.com/dashboard) and log in. On the [applications page](https://developer.spotify.com/dashboard/applications), create a new app and give it whatever name and description you'd like — you can always change it later.
 
-Once you've created your application, there are a couple of important things to make note of on the following page. First are your **Client ID** and **Client Secret**. These are what we'll use to make requests to the Spotify API. Next, in _edit settings_, you'll find **Redirect URIs**. These are where your users will be redirected after logging in to Spotify. We will later set this to use the domain associated with your web app, but set it to `http://localhost:8888/callback` for now.
+Once you've created your application, there are a couple of important things to make note of on the following page. First are your **Client ID** and **Client Secret**. These are what you'll use to make requests to the Spotify API. Next, in _edit settings_, you'll find **Redirect URIs**. These are where your users will be redirected after logging in to Spotify. We will later set this to use the domain associated with your web app, but set it to `http://localhost:8888/callback` for now.
 
-### Creating the App
+## Creating the App
 
 Alright, now it's time to jump into the code. I personally used the following imports, you can delete whatever you don't use later.
  ```
@@ -32,14 +33,13 @@ if __name__ == '__main__':
 ```
 Once we switch from testing, we'll come back and change this line.
 
-### Adding the Website Logic
+## Adding the Website Logic
 
-Okay so now we have an app technically, but it doesn't do anything! Let's start laying out what I call the 'logic' of the app — referring to how the various pages go to one another. 
+Okay so now we have an app technically, but it doesn't do anything! Let's start laying out what I call the "logic" of the app — referring to how the various pages go to one another. 
 
-#### Index
+### Index
 
 Most importantly, we have the landing page of the web app. All we need to do is render an HTML page that you can work on later.
-
 ```
 @app.route("/")
 def index():
@@ -48,12 +48,11 @@ def index():
     session.pop("plot_data", None)
     return render_template("index.html")
 ```
-The `@app.route("/")` tells the app to run this code whenever the url is at "/", which is the root of the website. Hold on a second! Didn't I say all we need to do is render? Well, I'm jumping ahead a bit here. In later parts of the code, I save some data in the session object of the app. What I am doing here is clearing out any possible data that could be currently held. This is particularly important to do since I'm storing a reasonable amount of data as a file.
+The `@app.route("/")` tells the app to run this code whenever the url is at "/", which is the root of the website. But hold on a second! Didn't I say all we need to do is render the HTML page? Well, I'm jumping a bit ahead here. In later parts of the code, I save some data in the session object of the app. What I am doing with `session.pop()` is clearing out any possible data that could be currently held. This is particularly important to do since I'm storing a reasonable amount of data as a file.
 
-#### Authorization
+### Authorization
 
-Now we have to get permission to access the user's Spotify account.
-
+Next, we have to get permission to access the user's Spotify account.
 ```
 @app.route("/authorization")
 def authorize():
@@ -68,10 +67,11 @@ def authorize():
     auth_url = "{}/?{}".format("https://accounts.spotify.com/authorize", url_args)
     return redirect(auth_url)
 ```
-So here, when we send our webpage to "/authorization", this redirects to the Spotify Login page, which is located at `https://accounts.spotify.com/authorize/` and needs several queries which we give in `auth_params`. The `show_dialog` option refers to whether the user has to log in every time, or if the login can be remembered. I've set this to true because I noticed one of my HTML pages wouldn't always load properly if it skipped the log in page. We are using `http://localhost:8888/callback` as the `redirect_uri` for now, but remember that it must match what you earlier gave to Spotify. The `client_id` is what was in your Spotify application page.
+So here, when we send our webpage to "/authorization", this redirects to the Spotify login page, which is located at `https://accounts.spotify.com/authorize/` and requires several queries which we give in `auth_params`. The `show_dialog` option refers to whether the user has to log in every time, or if the login can be remembered. I've set this to true because I noticed one of my HTML pages wouldn't always load properly if it skipped the login page. We are using `http://localhost:8888/callback` as the `redirect_uri` for now, but remember that it must match what you earlier gave to Spotify. The `client_id` is what was in your Spotify application page. Most important here is the `scope`. This defines what we get access to. The full range of scopes is [here](https://developer.spotify.com/documentation/general/guides/scopes/), but I used `user-top-read playlist-read-private playlist-read-collaborative user-library-read`.
 
-#### Callback
+### Callback
 
+Once the user logs in, Spotify will redirect back to the `redirect_uri` that we gave it, and our app will then call this code.
 ```
 @app.route("/callback")
 def getInfo():
@@ -90,3 +90,108 @@ def getInfo():
     except:
         return render_template("error.html")
 ```
+Let's break this down. First, we use `request.args` to get the authorization code from Spotify and then send it back to get the access token which we use to make requests to the API. I save it in a session for easy access later and render my next page. I believe it is good practice to set up an error page as well and let errors redirect there. However, assuming all things go well, we begin the process of collecting and analyzing data. 
+
+It is easy to call your methods for data processing and then simply redirect to the display page, but unfortunately for me, Heroku only allows 30 seconds without hearing back. While my program doesn't usually take that long, it definitely can. So I have set up a rather complicated method to retrieve all of the necessary data. First, I split each step of the loading process into different flask redirects, which each have their own message to display to the screen. And then, in each of those, I have my methods abort their processes and save their current data if a timer reaches 20 seconds, and have them resume after another page redirect. There are likely many better ways to do this, and you also may not have to deal with this issue, so I will not go step by step through that here. All of this code is on GitHub however, so feel free to take a look if this sounds like something you need.
+
+### Display
+
+The final step of the web app's redirect logic, the display page.
+```
+@app.route("/display")
+def display():
+    if session["method_data"]["incomplete_data_status"]:
+        session["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
+    else:
+        session["plot_data"]["incomplete_data_msg"] = ""
+    return render_template("analysis.html", info=session["plot_data"])
+```
+Honestly, there's not much to see here. At each step of the data collection and analysis, I saved the results to the session object. We can now pass this in the ``render_template`` method and access it in the HTML template.
+
+## Collecting From the Spotify API
+
+Okay, so we've finally finished the web logic. I'm not writing this article in the same order that I coded it, so I apologize if things are a little confusing. I hope by the end of this all, it will all make sense — and if not, remember that the source code is available for your inspection.
+
+All requests to the Spotify API will go to the base of `https://api.spotify.com/`, with extensions based on the specific request. I set a variable `base = https://api.spotify.com/v1` because all of the requests begin with `v1` as well. In almost all cases, you will also need a header containing your authorization, which has the key `Authorization` and the value `Bearer ACCESS_TOKEN`. If you've stored it like me, the creation of the header is like this: `{"Authorization" : "Bearer " + session["access_token"]}`. 
+
+I have a lot of convoluted collection methods to obtain the user's personal info, top tracks, top artists, entire library, and their playlists. I'll show one of the simpler ones here, for collecting the top artists.
+```
+def get_top_artists(artists, all_artists, incomplete_data, auth_header):
+    for i,term in enumerate(["long_term", "medium_term", "short_term"]):
+        response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":10}, headers=auth_header)
+        if response.status_code == requests.codes.ok:
+            artist_data = json.loads(response.text)["items"]
+            artists[i].extend([{artist["name"]:artist} for artist in artist_data])
+            for artist in artists[i]:
+                all_artists.update(artist)
+        else:
+            print("Failed to retrieve {} top artists".format(term))
+            incomplete_data = True 
+    l_a_names = [list(artist.keys())[0] for artist in artists[0]]
+    m_a_names = [list(artist.keys())[0] for artist in artists[1]]
+    s_a_names = [list(artist.keys())[0] for artist in artists[2]]
+    artist_names = [l_a_names, m_a_names, s_a_names]
+    return artist_names, incomplete_data
+ ```
+Let's break this down. The request allows us to specify the term for the top artists: long, medium, and short. I, of course, want all of them. So I enumerate through the options, and send a request to `https://api.spotify.com/v1/me/top/artists` for 10 artists of the specified term. If the request goes through, then I load the items and iterate through the artist objects. I have decided to store them all in a dictionary for their term with their name as the key. And each term is in a list called `artists`. I then add them to a collective dictionary of all of the artists. Finally, for convenience, I make lists of the top 10 artists' names.
+
+Spotify is quite good about [documenting](https://developer.spotify.com/documentation/web-api/reference/) what API requests should look like and the type of objects they return. It's the first place to look if you have trouble.
+
+## Analyzing the Data
+
+Well now that we have all the information that we want, we need to do something with it! For my needs, simple graphs would suffice and so I used Matplotlib to generate some plots. If you use Matplotlib, you need to set `plt.switch_backend('Agg')` or it won't run properly on Heroku. Here's a method involving the data I collected in the previous step. Note that you need some additional imports for this.
+```
+import io, base64
+from urllib.parse import quote
+import matplotlib.pyplot as plt
+
+def top_artists(method_data, plot_data):
+    plt.style.use('ggplot')
+    plt.rc("font", family="serif")
+    l_a_names, m_a_names, s_a_names = method_data["artist_names"]
+    artist_set = set()
+    artist_set.update(l_a_names)
+    artist_set.update(m_a_names)
+    artist_set.update(s_a_names)
+    places_dict = {}
+    count = max(len(l_a_names), len(m_a_names), len(s_a_names))
+    for artist in artist_set:
+        places = []
+        for l in [l_a_names, m_a_names, s_a_names]:
+            try:
+                places.append(l.index(artist)+1)
+            except:
+                places.append(count+1)
+        places_dict[artist] = places
+    ha = {
+        0:"left",
+        1:"center",
+        2:"right"
+    }
+    plt.figure(figsize=(10, 6))
+    plt.gca().set_prop_cycle('color', [plt.cm.tab20(i) for i in np.linspace(0,1,20)])
+    for artist in artist_set:
+        plt.plot(places_dict[artist])
+        for i,place in enumerate(places_dict[artist][::-1]):
+            if place <= count:
+                plt.annotate(artist, (2-i,place), ha=ha[2-i])
+                break
+    plt.yticks(list(range(1,count+1)))
+    plt.gca().yaxis.tick_right()
+    plt.xticks([0,1,2],["Long Term", "Medium Term", "Short Term"])
+    plt.gca().set_ylim([0.5,count+0.5])
+    plt.gca().invert_yaxis()
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    plt.close()
+    img.seek(0)
+    artists_pic = quote(base64.b64encode(img.read()).decode())
+    plot_data["top_artists_img"] = artists_pic
+ ```
+Okay, so what's the objective of this method. The final result is a line graph that shows how artists' rankings rise and fall over the three terms. Now let's break it down. First thing I do is set some styling — ggplot looks great and even better with a serif font in my opinion. Then I get a set of all of the artists that comprise the top ten for these terms. Then I go through the terms and get the artist's ranking. If they aren't in the top ten, I put them at rank 11. 
+
+Then it's time to start the actual plotting. I set the figure, the colors, and start plotting the rankings as lines. For each artist, I then annotate at the point closest to the end of the graph, where the artist is actually on the board. I also defined a `ha` dictionary for horizontal alignment, so that it changes depending on which point they're at. Next I set some labels and bounds on the graph, invert the y-axis so that it looks like an actual ranking, and save the plot as an encoded png.
+
+## The HTML
+
+Well, now it's time to make everything look nice.
