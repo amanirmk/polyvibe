@@ -1,7 +1,6 @@
-# How to Make a Spotify Web App 
-### Using Python, Flask, and Heroku
+# How to Make a Spotify Web App (Python, Flask, Heroku)
 
-If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, polyvibe. You can check it out [here](polyvibe.herokuapp.com)! It's not perfect, but if it seems along the lines of what you'd like to make — keep on reading!
+If you're both a programmer and a music enthusiast like me, odds are that you've considered making something with the Spotify API. If that sounds about right, then here's some help getting started. I'll be walking you through my process in creating my Spotify Web App, polyvibe. You can check it out [here](polyvibe.herokuapp.com)! It's not perfect, but if it seems along the lines of what you'd like to make — keep on reading! I also recommend following along in the actual GitHub repository to help fill in any details I forgot to mention.
 
 ## Obtaining Spotify API credentials
 
@@ -11,7 +10,7 @@ Once you've created your application, there are a couple of important things to 
 
 ## Creating the App
 
-Alright, now it's time to jump into the code. I personally used the following imports, you can delete whatever you don't use later.
+Alright, now it's time to jump into the code. Put this all in a file called `app.py`. I personally used the following imports, but you can always delete whatever you don't use later.
  ```
  import json
  import requests
@@ -112,8 +111,12 @@ Honestly, there's not much to see here. At each step of the data collection and 
 
 Okay, so we've finally finished the web logic. I'm not writing this article in the same order that I coded it, so I apologize if things are a little confusing. I hope by the end of this all, it will all make sense — and if not, remember that the source code is available for your inspection.
 
-All requests to the Spotify API will go to the base of `https://api.spotify.com/`, with extensions based on the specific request. I set a variable `base = https://api.spotify.com/v1` because all of the requests begin with `v1` as well. In almost all cases, you will also need a header containing your authorization, which has the key `Authorization` and the value `Bearer ACCESS_TOKEN`. If you've stored it like me, the creation of the header is like this: `{"Authorization" : "Bearer " + session["access_token"]}`. 
+**Note:** I recommend using a separate file for your collection and analysis so that your code doesn't get too messy. You can import the methods you need to `app.py`.
 
+All requests to the Spotify API will go to the base of `https://api.spotify.com/`, with extensions based on the specific request. I set a variable `base = https://api.spotify.com/v1` because all of the requests begin with `v1` as well. In almost all cases, you will also need a header containing your authorization, which has the key `Authorization` and the value `Bearer ACCESS_TOKEN`. If you've stored it like me, the creation of the header is like this: 
+```
+{"Authorization" : "Bearer " + session["access_token"]}
+``` 
 I have a lot of convoluted collection methods to obtain the user's personal info, top tracks, top artists, entire library, and their playlists. I'll show one of the simpler ones here, for collecting the top artists.
 ```
 def get_top_artists(artists, all_artists, incomplete_data, auth_header):
@@ -139,7 +142,7 @@ Spotify is quite good about [documenting](https://developer.spotify.com/document
 
 ## Analyzing the Data
 
-Well now that we have all the information that we want, we need to do something with it! For my needs, simple graphs would suffice and so I used Matplotlib to generate some plots. If you use Matplotlib, you need to set `plt.switch_backend('Agg')` or it won't run properly on Heroku. Here's a method involving the data I collected in the previous step. Note that you need some additional imports for this.
+Well now that we have all the information that we want, we need to do something with it! For my needs, simple graphs would suffice and so I used Matplotlib to generate some plots. **If you use Matplotlib**, you need to set `plt.switch_backend('Agg')` or it won't run properly on Heroku. Here's a method involving the data I collected in the previous step. Note that you need some additional imports for this.
 ```
 import io, base64
 from urllib.parse import quote
@@ -192,6 +195,66 @@ Okay, so what's the objective of this method. The final result is a line graph t
 
 Then it's time to start the actual plotting. I set the figure, the colors, and start plotting the rankings as lines. For each artist, I then annotate at the point closest to the end of the graph, where the artist is actually on the board. I also defined a `ha` dictionary for horizontal alignment, so that it changes depending on which point they're at. Next I set some labels and bounds on the graph, invert the y-axis so that it looks like an actual ranking, and save the plot as an encoded png.
 
-## The HTML
+## The HTML (Kinda, it's mostly up to you)
 
-Well, now it's time to make everything look nice.
+Well, now it's time to make everything look nice. Make a folder called `templates` where you'll put the HTML files. From there, it's about the same as making anything else with HTML. However, for CSS, you want to put those files in a folder called `static` and access them like this: 
+```
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+```
+To send your user to the login page, simply place a button with `href="/authorization"` and our web app logic will do the rest.
+
+And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{{ info['user_name'] }}`. 
+
+For full HTML examples, check out the code on GitHub.
+
+## Hosting Your Web App
+
+We're almost done! Assuming your app works as intented when hosted locally, it's now time to put it on Heroku.
+
+You'll need to install [Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#set-up) and log in / make an account.
+
+Next, cd into the folder where you wrote your app and [create it on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#deploy-the-app)
+```
+$ heroku create <name>
+$ git push heroku HEAD:master
+```
+Where `<name>` is of course the name of your web app. 
+(You can also link Heroku to a GitHub repository from the [Heroku website](https://dashboard.heroku.com/apps).)
+
+Some of these files may have been made automatically, but if not then
+
+- Create a `Procfile` and paste in the following:
+```
+web: gunicorn app:app --log-file=-
+heroku ps:scale web=1
+```
+ - Create a `requirements.txt` and paste in any libraries you require. For me, this was:
+```
+Flask
+flask_session
+matplotlib
+requests
+numpy
+gunicorn
+```
+ - And to be safe, create a `runtime.txt` and specify your version of Python, i.e `python-3.8.6`.
+
+Make sure to push your changes to Heroku again. 
+
+If this worked, then you should be able to visit your web app with `heroku open` or with the link `<name>.herokuapp.com`.
+
+I remember encountering a lot of trouble here, so you may have to check out other sources to assist with getting the app properly hosted.
+
+Assuming that you've successfuly hosted your app, there are two final changes to make. You need to **change the `redirect_uri`** to `https://<name>.herokuapp.com/callback` and add it to your accepted redirects on Spotify. Then you need to the **change the initialization** of your app from
+```
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=8888, debug=True)
+```
+to
+```
+if __name__ == '__main__':
+    app.run(debug=True, use_reloader=True)
+```
+And with this, your app should be ready to use! 
+
+**But of course, there's almost always going to be a debugging process, so I wish you the best of luck!**
