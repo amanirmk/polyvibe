@@ -11,14 +11,14 @@ Once you've created your application, there are a couple of important things to 
 ## Creating the App
 
 Alright, now it's time to jump into the code. Put this all in a file called `app.py`. I personally used the following imports, but you can always delete whatever you don't use later.
- ```
+ ```python
  import json
  import requests
  from flask_session import Session
  from flask import Flask, request, redirect, render_template, url_for, session
  ```
 Then create the app and give it a secret key. I also needed to store data larger than 4kb in the session object, so I set the type to `filesystem`.
-```
+```python
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "this is going on github anyways"
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -26,7 +26,7 @@ app.config.from_object(__name__)
 Session(app)
 ```
 Then add the following to start the app when the file runs.
-```
+```python
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8888, debug=True)
 ```
@@ -39,7 +39,7 @@ Okay so now we have an app technically, but it doesn't do anything! Let's start 
 ### Index
 
 Most importantly, we have the landing page of the web app. All we need to do is render an HTML page that you can work on later.
-```
+```python
 @app.route("/")
 def index():
     session.pop("access_key", None)
@@ -52,7 +52,7 @@ The `@app.route("/")` tells the app to run this code whenever the url is at "/",
 ### Authorization
 
 Next, we have to get permission to access the user's Spotify account.
-```
+```python
 @app.route("/authorization")
 def authorize():
     auth_params = {
@@ -71,7 +71,7 @@ So here, when we send our webpage to "/authorization", this redirects to the Spo
 ### Callback
 
 Once the user logs in, Spotify will redirect back to the `redirect_uri` that we gave it, and our app will then call this code.
-```
+```python
 @app.route("/callback")
 def getInfo():
     try:
@@ -96,7 +96,7 @@ It is easy to call your methods for data processing and then simply redirect to 
 ### Display
 
 The final step of the web app's redirect logic, the display page.
-```
+```python
 @app.route("/display")
 def display():
     if session["method_data"]["incomplete_data_status"]:
@@ -114,11 +114,11 @@ Okay, so we've finally finished the web logic. I'm not writing this article in t
 **Note:** I recommend using a separate file for your collection and analysis so that your code doesn't get too messy. You can import the methods you need to `app.py`.
 
 All requests to the Spotify API will go to the base of `https://api.spotify.com/`, with extensions based on the specific request. I set a variable `base = https://api.spotify.com/v1` because all of the requests begin with `v1` as well. In almost all cases, you will also need a header containing your authorization, which has the key `Authorization` and the value `Bearer ACCESS_TOKEN`. If you've stored it like me, the creation of the header is like this: 
-```
+```python
 {"Authorization" : "Bearer " + session["access_token"]}
 ``` 
 I have a lot of convoluted collection methods to obtain the user's personal info, top tracks, top artists, entire library, and their playlists. I'll show one of the simpler ones here, for collecting the top artists.
-```
+```python
 def get_top_artists(artists, all_artists, incomplete_data, auth_header):
     for i,term in enumerate(["long_term", "medium_term", "short_term"]):
         response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":10}, headers=auth_header)
@@ -143,7 +143,7 @@ Spotify is quite good about [documenting](https://developer.spotify.com/document
 ## Analyzing the Data
 
 Well now that we have all the information that we want, we need to do something with it! For my needs, simple graphs would suffice and so I used Matplotlib to generate some plots. **If you use Matplotlib**, you need to set `plt.switch_backend('Agg')` or it won't run properly on Heroku. Here's a method involving the data I collected in the previous step. Note that you need some additional imports for this.
-```
+```python
 import io, base64
 from urllib.parse import quote
 import matplotlib.pyplot as plt
@@ -198,12 +198,12 @@ Then it's time to start the actual plotting. I set the figure, the colors, and s
 ## The HTML (Kinda, it's mostly up to you)
 
 Well, now it's time to make everything look nice. Make a folder called `templates` where you'll put the HTML files. From there, it's about the same as making anything else with HTML. However, for CSS, you want to put those files in a folder called `static` and access them like this: 
-```
-<link rel="stylesheet" href="{\{ url_for('static', filename='css/index.css') }}">
+```html
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 ```
 To send your user to the login page, simply place a button with `href="/authorization"` and our web app logic will do the rest.
 
-And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{\{ info['user_name'] }}`. 
+And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{{ info['user_name'] }}`. 
 
 For full HTML examples, check out the code on GitHub.
 
@@ -214,7 +214,7 @@ We're almost done! Assuming your app works as intented when hosted locally, it's
 You'll need to install [Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#set-up) and log in / make an account.
 
 Next, cd into the folder where you wrote your app and [create it on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#deploy-the-app)
-```
+```shell
 $ heroku create <name>
 $ git push heroku HEAD:master
 ```
@@ -250,12 +250,12 @@ If this worked, then you should be able to visit your web app with `heroku open`
 I remember encountering a lot of trouble here, so you may have to check out other sources to assist with getting the app properly hosted.
 
 Assuming that you've successfuly hosted your app, there are two final changes to make. You need to **change the `redirect_uri`** to `https://<name>.herokuapp.com/callback` and add it to your accepted redirects on Spotify. Then you need to the **change the initialization** of your app from
-```
+```python
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8888, debug=True)
 ```
 to
-```
+```python
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
 ```
