@@ -199,11 +199,11 @@ Then it's time to start the actual plotting. I set the figure, the colors, and s
 
 Well, now it's time to make everything look nice. Make a folder called `templates` where you'll put the HTML files. From there, it's about the same as making anything else with HTML. However, for CSS, you want to put those files in a folder called `static` and access them like this: 
 ```
-<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="\{\{ url_for('static', filename='css/index.css') \}\}">
 ```
 To send your user to the login page, simply place a button with `href="/authorization"` and our web app logic will do the rest.
 
-And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{{ info['user_name'] }}`. 
+And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `\{\{ info['user_name'] \}\}`. 
 
 For full HTML examples, check out the code on GitHub.
 
@@ -224,11 +224,14 @@ Where `<name>` is of course the name of your web app.
 Some of these files may have been made automatically, but if not then
 
 - Create a `Procfile` and paste in the following:
+
 ```
 web: gunicorn app:app --log-file=-
 heroku ps:scale web=1
 ```
+
  - Create a `requirements.txt` and paste in any libraries you require. For me, this was:
+
 ```
 Flask
 flask_session
@@ -237,11 +240,12 @@ requests
 numpy
 gunicorn
 ```
+
  - And to be safe, create a `runtime.txt` and specify your version of Python, i.e `python-3.8.6`.
 
 Make sure to push your changes to Heroku again. 
 
-If this worked, then you should be able to visit your web app with `heroku open` or with the link `<name>.herokuapp.com`.
+If this worked, then you should be able to visit your web app with `heroku open` or with the link `https://<name>.herokuapp.com`.
 
 I remember encountering a lot of trouble here, so you may have to check out other sources to assist with getting the app properly hosted.
 
