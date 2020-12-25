@@ -352,7 +352,7 @@ def top_genres(method_data, plot_data):
                 props.append(term_genres[i][genre]/total_counts[i])
             else:
                 print("Total counts in top genres was 0")
-                props.append(0) #not sure why but I was getting a division by zero error, maybe here
+                props.append(0) #if no top genres for term (no top artists for term)
         genre_props.append(props)
     all_genres_list, genre_props = list(zip(*sorted(list(zip(all_genres_list, genre_props)), key=(lambda pair: pair[1][::-1]))))
     plt.figure(figsize=(10, 6))
@@ -385,6 +385,7 @@ def genre_diversity(method_data, plot_data):
             genre_counts.update(artist["genres"])
     total = sum(genre_counts.values())
     if total == 0:
+        #hope this never happens
         print("No genres found")
         plot_data["genres_pie_chart"] = "NA"
     else:
@@ -414,6 +415,7 @@ def artist_diversity(method_data, plot_data):
         artist_counts.update([artist["name"] for artist in track["artists"] if artist["name"]])
     total = sum(artist_counts.values())
     if total == 0:
+        #hope this never happens
         print("No artists found")
         plot_data["artists_pie_chart"] = "NA"
     else:
