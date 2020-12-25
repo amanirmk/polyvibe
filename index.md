@@ -205,7 +205,7 @@ Well, now it's time to make everything look nice. Make a folder called `template
 ```
 To send your user to the login page, simply place a button with `href="/authorization"` and our web app logic will do the rest.
 
-And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{{ info['user_name'] }}`. 
+And of course, we'll want to display the graphs we made. Anything we passed in the `render_template` method will be available here. If you followed along, we sent a dictionary called `info`, and we can access values like one would a normal dictionary, but with double braces around any variable, like `{% raw %}{{ info['user_name'] }}{% endraw %}`. 
 
 For full HTML examples, check out the code on GitHub.
 
