@@ -85,7 +85,8 @@ def getInfo():
         }
         response = requests.post("https://accounts.spotify.com/api/token", data=post_data)
         session["access_token"] = json.loads(response.text)["access_token"]
-        return render_template("loading.html", action="/loading1", msg="Collecting your top songs...")
+        return render_template("loading.html", action="/loading1", 
+            msg="Collecting your top songs...")
     except:
         return render_template("error.html")
 ```
@@ -100,7 +101,8 @@ The final step of the web app's redirect logic, the display page.
 @app.route("/display")
 def display():
     if session["method_data"]["incomplete_data_status"]:
-        session["plot_data"]["incomplete_data_msg"] = "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
+        session["plot_data"]["incomplete_data_msg"] = \
+            "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
     else:
         session["plot_data"]["incomplete_data_msg"] = ""
     return render_template("analysis.html", info=session["plot_data"])
@@ -121,7 +123,8 @@ I have a lot of convoluted collection methods to obtain the user's personal info
 ```python
 def get_top_artists(artists, all_artists, incomplete_data, auth_header):
     for i,term in enumerate(["long_term", "medium_term", "short_term"]):
-        response = requests.get(base + "/me/top/artists", params={"time_range":term, "limit":10}, headers=auth_header)
+        response = requests.get(base + "/me/top/artists", 
+            params={"time_range":term, "limit":10}, headers=auth_header)
         if response.status_code == requests.codes.ok:
             artist_data = json.loads(response.text)["items"]
             artists[i].extend([{artist["name"]:artist} for artist in artist_data])
