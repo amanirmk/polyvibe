@@ -102,7 +102,7 @@ The final step of the web app's redirect logic, the display page.
 def display():
     if session["method_data"]["incomplete_data_status"]:
         session["plot_data"]["incomplete_data_msg"] = \
-            "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
+        "Note: We encountered issues when collecting your data. The quality of this report may have been impacted."
     else:
         session["plot_data"]["incomplete_data_msg"] = ""
     return render_template("analysis.html", info=session["plot_data"])
