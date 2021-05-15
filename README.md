@@ -4,7 +4,7 @@ Analyzes a Spotify user's listening history and provides detailed statistics reg
 
 Note: Better experience on Chrome
 
-### To do
+### Possible to do
 
 - Allow partial or random sampling of music to speed up collection process.
 - Add support for Apple Music
